@@ -8,7 +8,7 @@
 class Column : public ModelViewWithLighting
 {
 public:
-	Column(cryph::AffPoint bottom_,float bradius_, cryph::AffPoint top_, float tradius_, float color_[3]);
+	Column(cryph::AffPoint bottom_,float bradius_, cryph::AffPoint top_, float tradius_, float color_[3], bool capped);
 	virtual ~Column();
 
 	cryph::AffPoint bottom;
@@ -19,19 +19,25 @@ public:
 	float tradius;
 	static int instances;
 	
-	
+	void handleCommand(unsigned char key, double ldsX, double ldsY);
 	// xyzLimits: {mcXmin, mcXmax, mcYmin, mcYmax, mcZmin, mcZmax}
 	void getMCBoundingBox(double* xyzLimitsF) const;
 	void render();
 private:
+	bool Ihandle;
+	bool capped;
+	unsigned int topCap[1000];
+	unsigned int bottomCap[1000];
+  
 	GLuint vao[1];
 	GLuint vbo[2];
   
   
 	cryph::AffVector defineStarter();
 	void defineColumn();
-	void renderColumn();
+	void renderColumn(float * color);
 	void setBounds();
+	void initializeCappingIndices();
 };
 
 #endif

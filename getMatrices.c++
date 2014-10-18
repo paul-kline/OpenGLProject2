@@ -19,11 +19,13 @@ void ModelView::getMatrices(cryph::Matrix4x4& mc_ec, cryph::Matrix4x4& ec_lds)
   
 	
 	
-double xmin = mcRegionOfInterest[0];
+	double xmin = mcRegionOfInterest[0];
 	double xmax = mcRegionOfInterest[1];
 	double ymin = mcRegionOfInterest[2];
 	double ymax = mcRegionOfInterest[3];
 
+	
+	std::cout << "ymin: " << ymin << " ymax: " << ymax << "\n\n";
 	// BEGIN: ASPECT RATIO CONSIDERATIONS
 	// If we wish to preserve aspect ratios, make "region of interest"
 	// wider or taller to match the Controller's viewport aspect ratio.
@@ -50,8 +52,8 @@ double xmin = mcRegionOfInterest[0];
 		ymin = ymid - 0.5*wHeight;
 		ymax = ymid + 0.5*wHeight;
 	}
-	ec_lds = cryph::Matrix4x4::perspective( zpp,  xmin,  xmax,
-		 ymin,  ymax,  ecZmin,  ecZmax);
+	ec_lds = cryph::Matrix4x4::perspective( zpp,  -(xmax - xmin)/2, (xmax-xmin)/2,
+		-(ymax-ymin)/2,  (ymax-ymin)/2,  ecZmin,  ecZmax);
 	//ec_lds = cryph::Matrix4x4::orthogonal(xmin,xmax,ymin,ymax,ecZmin, ecZmax);
 	//    cryph::Matrix4x4 cryph::Matrix4x4::lookAt(
 	//          const cryph::AffPoint& eye, const cryph::AffPoint& center,

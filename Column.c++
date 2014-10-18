@@ -3,15 +3,28 @@
 #include "Column.h"
 #include "ShaderIF.h"
 #include <cmath>
+#include "GLFWController.h"
 
-
-int NUM_AROUND_CIRCLE = 300;
+int NUM_AROUND_CIRCLE = 100;
 
 int Column::instances;
 
+typedef float vec3[3];
+int topCap[1000];
+int bottomCap[1000];
+  
+
+
+bool displayCylEdges = false;
+bool displayCylFill=true;
+float black[] = { 0.0, 0.0, 0.0 };
 cryph::AffVector direction;
-Column::Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, float tradius_, float color_[6]){
+Column::Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, float tradius_, float color_[6], bool capped_){
   Column::instances++;
+  
+  Ihandle = (Column::instances ==1)? true : false; //take care of the handling.
+  
+ capped = capped_;
  bottom = bottom_;
  top=top_;
  bradius =bradius_ ;
@@ -23,6 +36,7 @@ Column::Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, fl
  direction.normalize();
  
  defineColumn();
+ initializeCappingIndices();
  setBounds();
   
   
@@ -60,21 +74,22 @@ void Column::defineColumn()
 	cryph::AffVector currVToPoint = defineStarter(); //starter is unit vector.
 	//std::cout << "direction vector: " << direction.dx << ", " << direction.dy << ", " << direction.dz << "\n";
 	std::cout << "starter vector: " << currVToPoint.dx << ", " << currVToPoint.dy << ", " << currVToPoint.dz << "\n";
-	cryph::AffVector mvDir = currVToPoint.cross(direction);
+	cryph::AffVector mvDir = direction.cross(currVToPoint);
 	cryph::AffPoint currpoint_b = bottom + bradius*currVToPoint;
 	cryph::AffPoint currpoint_t = top + tradius*currVToPoint;
 	
-	cryph::AffVector normal_b;
-	//cryph::AffVector normal_t; unneeded. same as normal_b I realized.
-	
+
 	cryph::AffVector paralleltrash; //I don't need this
 	cryph::AffVector perp_b;
-	cryph::AffVector perp_t; 
 	
-	(currpoint_b-bottom).decompose((currpoint_t-currpoint_b),paralleltrash, perp_b); //sets the normal of the point and puts in perp_b. note this should be the normal at both ends of the columnthingy.
+	//(currpoint_b-bottom).decompose((currpoint_t-currpoint_b),paralleltrash, perp_b); //sets the normal of the point and puts in perp_b. note this should be the normal at both ends of the columnthingy.
 	
-	std::cout <<"Here is the INITIAL lengthof the b point: "<< (currpoint_b-bottom).length()<<"\n";
-	std::cout <<"Here is the INITIAL lengthof the b point: "<< (currpoint_t-top).length()<<"\n\n";
+		perp_b = (currpoint_b-bottom).cross(currpoint_t-currpoint_b).cross(currpoint_t-currpoint_b);
+	
+	
+	//std::cout <<"HEre is the normal: "<< perp_b.dx << ", " << perp_b.dy << ", " << perp_b.dz << "\n\n";
+	//std::cout <<"Here is the INITIAL lengthof the b point: "<< (currpoint_b-bottom).length()<<"\n";
+	//std::cout <<"Here is the INITIAL lengthof the b point: "<< (currpoint_t-top).length()<<"\n\n";
 	for (int i=0 ; i<=NUM_AROUND_CIRCLE ; i++)
 	{
 		int j = 2 * i;
@@ -91,25 +106,30 @@ void Column::defineColumn()
 		//first of all, theta needs incremented.
 		if(i ==NUM_AROUND_CIRCLE)
 		  break;
-		theta += dTheta;
+		//theta += dTheta;
 		//now I must calculate the direction of travel from currVToPoint.
 		//this mvdir is the vector both perp with the (top-bottom) vector and the vector we used to move out the distance of the radius.
-		mvDir = currVToPoint.cross(direction); //recalling that direction = (top-bottom).normalize() therefore mvDir is a unit vector since it is the
+		mvDir = direction.cross(currVToPoint); //recalling that direction = (top-bottom).normalize() therefore mvDir is a unit vector since it is the
+	//	std::cout << "mvdir length: " << mvDir.length() << "\n";
 		//cross product of 2 unit vectors 90 degrees apart. 
 		
 		//Now we make the new bottom point!
-		currpoint_b = (bottom + (bradius*cos(theta))*currVToPoint ) + (bradius * sin(theta) *mvDir);
+		currpoint_b = bottom + ((bradius*cos(dTheta))*currVToPoint + ((bradius * sin(dTheta)) *mvDir));
 		//top is the same
-		currpoint_t = (top + (tradius*cos(theta))*currVToPoint ) + (tradius * sin(theta) *mvDir);
+		currpoint_t = top + ((tradius*cos(dTheta))*currVToPoint + ((tradius * sin(dTheta)) *mvDir));
 		//better reflect that in the currVToPoint
 		currVToPoint =(currpoint_b-bottom); //same as (currpoint_t-top).normalize()
 		currVToPoint.normalize();
 	
 	//I think thats it.. no wait. normals..
-		(currpoint_b-bottom).decompose((currpoint_t-currpoint_b),paralleltrash, perp_b);
+		cryph::AffVector helperV = (currpoint_b-bottom).cross(currpoint_t-currpoint_b);
+		perp_b = helperV.cross(currpoint_t-currpoint_b);
+	//	std::cout << "is perp normal? " << perp_b.dot(currpoint_t-currpoint_b) << "\n\n";
+		
 	//there, that should do it..
-		std::cout <<"Here is the lengthof the b point: "<< (currpoint_b-bottom).length()<<"\n\n";
-		std::cout <<"Here is the lengthof the t point: "<< (currpoint_t-top).length()<<"\n\n";
+	//	std::cout <<"HEre is the normal: "<< perp_b.dx << ", " << perp_b.dy << ", " << perp_b.dz << "\n\n";
+		//std::cout <<"Here is the lengthof the b point: "<< (currpoint_b-bottom).length()<<"\n\n";
+		//std::cout <<"Here is the lengthof the t point: "<< (currpoint_t-top).length()<<"\n\n";
 		
 	}
 	glGenVertexArrays(1, vao);
@@ -139,8 +159,8 @@ cryph::AffVector Column::defineStarter(){
   cryph::AffVector result = v.cross(direction);
   
   result.normalize();
-  std::cout << "result vector: " << result.dx << ", " << result.dy << ", " << result.dz << "\n";
-  std::cout << "here is the result of the dot with the direction: " << result.dot(direction);
+ // std::cout << "result vector: " << result.dx << ", " << result.dy << ", " << result.dz << "\n";
+ // std::cout << "here is the result of the dot with the direction: " << result.dot(direction);
   return result;
   
     
@@ -149,6 +169,90 @@ cryph::AffVector Column::defineStarter(){
   
   
 }
+ float delta_eye=0.03;
+ bool quad34=false;
+void Column::handleCommand(unsigned char key, double ldsX, double ldsY)
+{
+  
+  //std::cout << "Key pressed: "<< key <<"\n";
+  if(!Ihandle)
+    return;
+  //get outa here!
+  
+	//lateral movement
+	if (key == 'a' || key =='d'){
+	  cryph::AffVector v = eye -center;
+	  
+	//  std::cout << "this is the v vector" << v.dx << ", " << v.dy << ", " << v.dz  << "\n";
+	  //std::cout << "EYE BEFORE" << eye.x << ", " << eye.y << ", " << eye.z  << "\n";
+	    float r = sqrt(pow(v.dx, 2) + pow(v.dz, 2));
+	    float theta = atan(v.dx/v.dz);
+	    float thetanew= (theta + delta_eye*((key =='d')? (-1) : 1)); //tertiary for if we should move in the other direction or not.
+	    if(thetanew >= M_PI/2){
+	      quad34 = !quad34;
+		//delta = -1 * delta;
+	      
+	    }
+
+//	    std::cout <<"new theta :" << thetanew << "\n";
+//   	   
+	    
+	    v.dx = sin(thetanew)*r;
+	    v.dz = cos(thetanew) * r;
+	    if(quad34){
+		v= -v;
+	      
+	    }
+	    eye = center + v;
+	//     std::cout << "EYE AFTER" << eye.x << ", " << eye.y << ", " << eye.z ;
+	  //  std::cout << "in!!!!!";
+	    GLFWController* glfwC =
+ 				dynamic_cast<GLFWController*>(Controller::getCurrentController());
+ 			if (glfwC != NULL)
+ 			{
+ 				glfwC->setRunWaitsForAnEvent(false);
+ 			}
+	    
+	
+	}else if (key == 'w' || key =='s'){
+	  cryph::AffVector v = eye -center;
+	  
+	//  std::cout << "this is the v vector" << v.dx << ", " << v.dy << ", " << v.dz  << "\n";
+	  //std::cout << "EYE BEFORE" << eye.x << ", " << eye.y << ", " << eye.z  << "\n";
+	  
+	//  double useThisDelta = delta_eye * ((key == 'w')? 1 : -1);
+	  double r = v.length();
+	  cryph::AffVector mvThisWay;
+	  up.normalizeToCopy(mvThisWay);
+	  mvThisWay.normalize();
+	  v.normalize();
+	  mvThisWay = mvThisWay * ((key=='w')? 1 : -1);
+	  cryph::AffVector tempV;
+	  (center-eye).normalizeToCopy(tempV);
+	  
+	  
+	  double b= sin(delta_eye)*r; //b to align with what I have on my sketchy paper.
+	  
+	   up =up + (sin(delta_eye)*b) * tempV * ((key=='s')? -1: 1);
+	   up.normalize();
+	  eye = center + (cos(delta_eye)*r)*v + (sin(delta_eye)*r)*mvThisWay;
+	  
+	 
+	//     std::cout << "EYE AFTER" << eye.x << ", " << eye.y << ", " << eye.z ;
+	  //  std::cout << "in!!!!!";
+	    GLFWController* glfwC =
+ 				dynamic_cast<GLFWController*>(Controller::getCurrentController());
+ 			if (glfwC != NULL)
+ 			{
+ 				glfwC->setRunWaitsForAnEvent(false);
+ 			}
+	    
+	
+	}
+
+
+}
+
 void Column::setBounds()
 {
   //cryph::AffVector direction =(top - bottom).normalize(); I'll come back to proper bounding when in clear thought
@@ -164,16 +268,31 @@ void Column::setBounds()
   
   
 }
-void Column::renderColumn(){
-	typedef float vec3[3];
-	vec3 colColor = {1, 0.0, 0.0};
-	glUniform3fv(ppuLoc_kd, 1, colColor);
+
+
+void Column::initializeCappingIndices()
+{
+  for (int i=0 ; i<=NUM_AROUND_CIRCLE ; i++)
+	{
+		unsigned int j = 2 * i;
+		bottomCap[i]=j;
+		topCap[i]=j+1;//((unsigned int)(j+1));
+		
+	}
+
+}
+
+void Column::renderColumn(vec3 color){
+	//typedef float vec3[3];
+	//vec3 colColor = {1, 0.0, 0.0};
+	glUniform3fv(ppuLoc_kd, 1, color);
 	glBindVertexArray(vao[0]);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*(NUM_AROUND_CIRCLE+1)); 
   
 }
-bool displayCylEdges = true;
-bool displayCylFill=false;
+
+
+
 void Column::render()
 {
 	GLint pgm;
@@ -186,18 +305,29 @@ void Column::render()
 	glUniformMatrix4fv(ppuLoc_mc_ec, 1, false, mc_ec.extractColMajor(mat));
 	glUniformMatrix4fv(ppuLoc_ec_lds, 1, false, ec_lds.extractColMajor(mat));
 
-	float black[] = { 0.0, 0.0, 0.0 };
+	
 
 	if (displayCylFill)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		renderColumn();
+		renderColumn(color);
 	}
 	if (displayCylEdges)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		renderColumn();
+		renderColumn(black);
+	}
+	if(capped){
+	    glDisableVertexAttribArray(pvaLoc_mcNormal);
+	    glVertexAttrib3f(pvaLoc_mcNormal, -direction.dx,-direction.dy,-direction.dz);
+	    glDrawElements(GL_TRIANGLE_FAN,(NUM_AROUND_CIRCLE+1),GL_UNSIGNED_INT,  bottomCap);
+	    glVertexAttrib3f(pvaLoc_mcNormal, direction.dx,direction.dy,direction.dz);
+	    glDrawElements(GL_TRIANGLE_FAN,(NUM_AROUND_CIRCLE+1),GL_UNSIGNED_INT,  topCap);
+	    glEnableVertexAttribArray(pvaLoc_mcNormal);
+	  
 	}
 
 	glUseProgram(pgm);
 }
+
+

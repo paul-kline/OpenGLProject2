@@ -68,45 +68,45 @@ void Cylinder::getMCBoundingBox(double* xyzLimits) const
 	xyzLimits[4] = -1.0;
 	xyzLimits[5] = 1.0;
 }
-float delta=0.03;
-bool quad34=false;
+//float delta=0.03;
+//bool quad34=false;
 void Cylinder::handleCommand(unsigned char key, double ldsX, double ldsY)
 {
-	if (key = 'i'){
-	  cryph::AffVector v = eye -center;
-	  
-	//  std::cout << "this is the v vector" << v.dx << ", " << v.dy << ", " << v.dz  << "\n";
-	  //std::cout << "EYE BEFORE" << eye.x << ", " << eye.y << ", " << eye.z  << "\n";
-	    float r = sqrt(pow(v.dx, 2) + pow(v.dz, 2));
-	    float theta = atan(v.dx/v.dz);
-	    float thetanew= (theta + delta);
-	    if(thetanew >= M_PI/2){
-	      quad34 = !quad34;
-		//delta = -1 * delta;
-	      
-	    }
-	    std::cout <<"new theta :" << thetanew << "\n";
-//   	   
-	    
-	    v.dx = sin (thetanew)*r;
-	    v.dz = cos(thetanew) * r;
-	    
-	    if(quad34){
-		v= -v;
-	      
-	    }
-	    eye = center + v;
-	//     std::cout << "EYE AFTER" << eye.x << ", " << eye.y << ", " << eye.z ;
-	  //  std::cout << "in!!!!!";
-	    GLFWController* glfwC =
- 				dynamic_cast<GLFWController*>(Controller::getCurrentController());
- 			if (glfwC != NULL)
- 			{
- 				glfwC->setRunWaitsForAnEvent(false);
- 			}
+// 	if (key = 'i'){
+// 	  cryph::AffVector v = eye -center;
+// 	  
+// 	//  std::cout << "this is the v vector" << v.dx << ", " << v.dy << ", " << v.dz  << "\n";
+// 	  //std::cout << "EYE BEFORE" << eye.x << ", " << eye.y << ", " << eye.z  << "\n";
+// 	    float r = sqrt(pow(v.dx, 2) + pow(v.dz, 2));
+// 	    float theta = atan(v.dx/v.dz);
+// 	    float thetanew= (theta + delta);
+// 	    if(thetanew >= M_PI/2){
+// 	      quad34 = !quad34;
+// 		//delta = -1 * delta;
+// 	      
+// 	    }
+// 	    std::cout <<"new theta :" << thetanew << "\n";
+// //   	   
+// 	    
+// 	    v.dx = sin (thetanew)*r;
+// 	    v.dz = cos(thetanew) * r;
+// 	    
+// 	    if(quad34){
+// 		v= -v;
+// 	      
+// 	    }
+// 	    eye = center + v;
+// 	//     std::cout << "EYE AFTER" << eye.x << ", " << eye.y << ", " << eye.z ;
+// 	  //  std::cout << "in!!!!!";
+// 	    GLFWController* glfwC =
+//  				dynamic_cast<GLFWController*>(Controller::getCurrentController());
+//  			if (glfwC != NULL)
+//  			{
+//  				glfwC->setRunWaitsForAnEvent(false);
+//  			}
 	    
 	
-	}
+//	}
 
 	if (key == 'c')
 		displayCylFill = !displayCylFill;
