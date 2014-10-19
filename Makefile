@@ -6,7 +6,7 @@ LINK = g++ -fPIC -g
 LOCAL_UTIL_LIBRARIES = -L../lib -lcryph -lfont -lglsl -lmvc
 OGL_LIBRARIES = -lglfw -lGLU -lGL
 
-OBJS = project2.o Simpleshape.o getMatrices.o Cylinder.o Column.o Block.o Stairs.o
+OBJS = project2.o Simpleshape.o getMatrices.o Cylinder.o Column.o Block.o Stairs.o HalfColumn.o FancyColumn.o SuperFancyColumn.o
 all:
 	$(MAKE) -C ../mvcutil
 	$(MAKE) project2
@@ -32,6 +32,10 @@ getMatrices.o: getMatrices.c++
 	$(CPP) $(C_FLAGS) getMatrices.c++
 Column.o: Column.h Column.c++
 	$(CPP) $(C_FLAGS) Column.c++
+HalfColumn.o: HalfColumn.h HalfColumn.c++
+	$(CPP) $(C_FLAGS) HalfColumn.c++
+FancyColumn.o: FancyColumn.h FancyColumn.c++
+	$(CPP) $(C_FLAGS) FancyColumn.c++
 Block.o: Block.h Block.c++
 	$(CPP) $(C_FLAGS) Block.c++
 Stairs.o: Stairs.h Stairs.c++
@@ -40,7 +44,8 @@ Simpleshape.o: Simpleshape.h Simpleshape.c++
 	$(CPP) $(C_FLAGS) Simpleshape.c++
 Cylinder.o: Cylinder.h Cylinder.c++
 	$(CPP) $(C_FLAGS) Cylinder.c++
-	
+SuperFancyColumn.o: SuperFancyColumn.h SuperFancyColumn.c++
+	$(CPP) $(C_FLAGS) SuperFancyColumn.c++	
 	
 clean:
 	rm -f ../mvcutil/ModelView.o ../mvcutil/ModelViewWithLighting.o ./*.o

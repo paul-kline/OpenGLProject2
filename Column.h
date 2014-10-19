@@ -8,6 +8,7 @@
 class Column : public ModelViewWithLighting
 {
 public:
+	Column();
 	Column(cryph::AffPoint bottom_,float bradius_, cryph::AffPoint top_, float tradius_, float color_[3], bool capped);
 	virtual ~Column();
 
@@ -28,11 +29,13 @@ private:
 	bool capped;
 	unsigned int topCap[1000];
 	unsigned int bottomCap[1000];
-  
+	bool displayCylEdges = false;
+	bool displayCylFill=true;
+	
 	GLuint vao[1];
 	GLuint vbo[2];
   
-  
+	void myhandleKeys();
 	cryph::AffVector defineStarter();
 	void defineColumn();
 	void renderColumn(float * color);

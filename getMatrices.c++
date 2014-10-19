@@ -25,7 +25,7 @@ void ModelView::getMatrices(cryph::Matrix4x4& mc_ec, cryph::Matrix4x4& ec_lds)
 	double ymax = mcRegionOfInterest[3];
 
 	
-	std::cout << "ymin: " << ymin << " ymax: " << ymax << "\n\n";
+	//std::cout << "ymin: " << ymin << " ymax: " << ymax << "\n\n";
 	// BEGIN: ASPECT RATIO CONSIDERATIONS
 	// If we wish to preserve aspect ratios, make "region of interest"
 	// wider or taller to match the Controller's viewport aspect ratio.

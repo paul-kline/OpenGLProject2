@@ -10,15 +10,18 @@ int NUM_AROUND_CIRCLE = 100;
 int Column::instances;
 
 typedef float vec3[3];
-int topCap[1000];
-int bottomCap[1000];
-  
 
 
-bool displayCylEdges = false;
-bool displayCylFill=true;
+
+ 
 float black[] = { 0.0, 0.0, 0.0 };
 cryph::AffVector direction;
+Column::Column()
+{
+ // Ihandle = (Column::instances ==1)? true : false;
+
+}
+
 Column::Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, float tradius_, float color_[6], bool capped_){
   Column::instances++;
   
@@ -39,12 +42,15 @@ Column::Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, fl
  initializeCappingIndices();
  setBounds();
   
-  
+ displayCylEdges = false;
+ displayCylFill=true;
   
 };
 
 Column::~Column()
 {
+  delete [] topCap;
+  delete [] bottomCap;
 }
 
 // xyzLimits: {mcXmin, mcXmax, mcYmin, mcYmax, mcZmin, mcZmax}
@@ -174,14 +180,203 @@ cryph::AffVector Column::defineStarter(){
 void Column::handleCommand(unsigned char key, double ldsX, double ldsY)
 {
   
+//   //std::cout << "Key pressed: "<< key <<"\n";
+//   if(!Ihandle)
+//     return;
+//   
+//  
+// 
+//      GLFWController* glfwC =
+//  				dynamic_cast<GLFWController*>(Controller::getCurrentController());
+//  			if (glfwC != NULL)
+//  			{
+// 			//glfwEnable( GLFW_STICKY_KEYS );
+//  				//std::cout << "Are you holding down the 'o' key?: " << glfwGetKey(glfwC->theWindow , '+');
+//  			}
+//      //info about keys I'm interested in:
+//       bool a_down = (glfwGetKey(glfwC->theWindow , 'A') == 1)? true : false;
+//       bool s_down = (glfwGetKey(glfwC->theWindow , 'S') == 1)? true : false;
+//       bool d_down = (glfwGetKey(glfwC->theWindow , 'D') == 1)? true : false;
+//       bool w_down = (glfwGetKey(glfwC->theWindow , 'W') == 1)? true : false;
+//       bool u_down = (glfwGetKey(glfwC->theWindow , 'U') == 1)? true : false;
+//       
+//   if(key == '+' || key == '-'){
+// 	  cryph::AffVector v = ((key =='+')? (center-eye) : (eye-center));
+// 	  v.normalize();
+// 	  float zoomSize = 10;
+// 	  eye= eye + (v*zoomSize);
+// 	  //return;
+//   }
+//   if(u_down){
+//    // delete &up;
+//     up = cryph::AffVector(0,1,0);
+//    // return;
+//   }
+//     
+//   //get outa here!
+//   float mvsize = 10;
+// 	//lateral movement
+// 	if (a_down || d_down){
+// 	  cryph::AffVector v = eye -center;
+// 	  //begin different experiement.
+// 	  cryph::AffVector dir = up.cross(v);
+// 	  dir.normalize();
+// 	  float length = v.length();
+// 	  
+// 	  
+// 	  dir = dir*mvsize * ((a_down)? -1 : 1);
+// 	  cryph::AffVector newVec = v +dir;
+// 	  newVec.normalize();
+// 	  newVec*=length;
+// 	  
+// 	  eye =center +  newVec;
+// 	  
+// 	/*  
+// 	  
+// 	//  std::cout << "this is the v vector" << v.dx << ", " << v.dy << ", " << v.dz  << "\n";
+// 	  //std::cout << "EYE BEFORE" << eye.x << ", " << eye.y << ", " << eye.z  << "\n";
+// 	    float r = sqrt(pow(v.dx, 2) + pow(v.dz, 2));
+// 	    float theta = atan(v.dx/v.dz);
+// 	    float thetanew= (theta + delta_eye*((key =='d')? (-1) : 1)); //tertiary for if we should move in the other direction or not.
+// 	    if(thetanew >= M_PI/2){
+// 	      quad34 = !quad34;
+// 		//delta = -1 * delta;
+// 	      
+// 	    }
+// 
+// //	    std::cout <<"new theta :" << thetanew << "\n";
+// //   	   
+// 	    
+// 	    v.dx = sin(thetanew)*r;
+// 	    v.dz = cos(thetanew) * r;
+// 	    if(quad34){
+// 		v= -v;
+// 	      
+// 	    }
+// 	    eye = center + v;*/
+// 	//     std::cout << "EYE AFTER" << eye.x << ", " << eye.y << ", " << eye.z ;
+// 	  //  std::cout << "in!!!!!";
+// 	    GLFWController* glfwC =
+//  				dynamic_cast<GLFWController*>(Controller::getCurrentController());
+//  			if (glfwC != NULL)
+//  			{
+//  			//	glfwC->setRunWaitsForAnEvent(false);
+//  			}
+// 	    
+// 	
+// 	} 
+// 	
+// 	if (w_down || s_down){
+// 	  cryph::AffVector v = eye -center;
+// 	  float length = v.length();
+// 	  cryph::AffVector dir = up * ((w_down)? 1 : -1);
+// 	  dir.normalize();
+// 	  dir *=mvsize;
+// 	  cryph::AffVector newVec = v + dir;
+// 	  newVec.normalize();
+// 	  newVec*=length;
+// 	  eye = center + newVec;
+// 	  
+// 	  //fix up. He's a bit of a fixer upper.
+// 	  cryph::AffVector temp1 = up.cross(newVec);
+// 	  //temp1 is pointing to the "right" from the eye-ish point of view. right hand rule, recalling that newVec is pointing TOWARD the eye pos. 
+// 	  up = newVec.cross(temp1);
+// 	  up.normalize();
+// 	  
+// 	  
+// 	  
+// 	/*  
+// 	//  std::cout << "this is the v vector" << v.dx << ", " << v.dy << ", " << v.dz  << "\n";
+// 	  //std::cout << "EYE BEFORE" << eye.x << ", " << eye.y << ", " << eye.z  << "\n";
+// 	  
+// 	//  double useThisDelta = delta_eye * ((key == 'w')? 1 : -1);
+// 	  double r = v.length();
+// 	  cryph::AffVector mvThisWay;
+// 	  up.normalizeToCopy(mvThisWay);
+// 	  mvThisWay.normalize();
+// 	  v.normalize();
+// 	  mvThisWay = mvThisWay * ((key=='w')? 1 : -1);
+// 	  cryph::AffVector tempV;
+// 	  (center-eye).normalizeToCopy(tempV);
+// 	  
+// 	  
+// 	  double b= sin(delta_eye)*r; //b to align with what I have on my sketchy paper.
+// 	  
+// 	   up =up + (sin(delta_eye)*b) * tempV * ((key=='s')? -1: 1);
+// 	   up.normalize();
+// 	  eye = center + (cos(delta_eye)*r)*v + (sin(delta_eye)*r)*mvThisWay;*/
+// 	  
+// 	 
+// 	//     std::cout << "EYE AFTER" << eye.x << ", " << eye.y << ", " << eye.z ;
+// 	  //  std::cout << "in!!!!!";
+// 	    GLFWController* glfwC =
+//  				dynamic_cast<GLFWController*>(Controller::getCurrentController());
+//  			if (glfwC != NULL)
+//  			{
+//  				//glfwC->setRunWaitsForAnEvent(false);
+//  			}
+// 	    
+// 	
+// 	}
+
+
+}
+
+void Column::myhandleKeys(){
   //std::cout << "Key pressed: "<< key <<"\n";
   if(!Ihandle)
     return;
-  //get outa here!
   
+ 
+
+     GLFWController* glfwC =
+ 				dynamic_cast<GLFWController*>(Controller::getCurrentController());
+ 			if (glfwC != NULL)
+ 			{
+			//glfwEnable( GLFW_STICKY_KEYS );
+ 				//std::cout << "Are you holding down the 'o' key?: " << glfwGetKey(glfwC->theWindow , '+');
+ 			}
+     //info about keys I'm interested in:
+      bool a_down = (glfwGetKey(glfwC->theWindow , 'A') == 1)? true : false;
+      bool s_down = (glfwGetKey(glfwC->theWindow , 'S') == 1)? true : false;
+      bool d_down = (glfwGetKey(glfwC->theWindow , 'D') == 1)? true : false;
+      bool w_down = (glfwGetKey(glfwC->theWindow , 'W') == 1)? true : false;
+      bool u_down = (glfwGetKey(glfwC->theWindow , 'U') == 1)? true : false;
+      bool o_down = (glfwGetKey(glfwC->theWindow , 'O') == 1)? true : false;
+      bool i_down = (glfwGetKey(glfwC->theWindow , 'I') == 1)? true : false;
+      
+  if(i_down || o_down){
+	  cryph::AffVector v = ((i_down)? (center-eye) : (eye-center));
+	  v.normalize();
+	  float zoomSize = 10;
+	  eye= eye + (v*zoomSize);
+	  //return;
+  }
+  if(u_down){
+   // delete &up;
+    up = cryph::AffVector(0,1,0);
+   // return;
+  }
+    
+  //get outa here!
+  float mvsize = 10;
 	//lateral movement
-	if (key == 'a' || key =='d'){
+	if (a_down || d_down){
 	  cryph::AffVector v = eye -center;
+	  //begin different experiement.
+	  cryph::AffVector dir = up.cross(v);
+	  dir.normalize();
+	  float length = v.length();
+	  
+	  
+	  dir = dir*mvsize * ((a_down)? -1 : 1);
+	  cryph::AffVector newVec = v +dir;
+	  newVec.normalize();
+	  newVec*=length;
+	  
+	  eye =center +  newVec;
+	  
+	/*  
 	  
 	//  std::cout << "this is the v vector" << v.dx << ", " << v.dy << ", " << v.dz  << "\n";
 	  //std::cout << "EYE BEFORE" << eye.x << ", " << eye.y << ", " << eye.z  << "\n";
@@ -203,20 +398,39 @@ void Column::handleCommand(unsigned char key, double ldsX, double ldsY)
 		v= -v;
 	      
 	    }
-	    eye = center + v;
+	    eye = center + v;*/
 	//     std::cout << "EYE AFTER" << eye.x << ", " << eye.y << ", " << eye.z ;
 	  //  std::cout << "in!!!!!";
 	    GLFWController* glfwC =
  				dynamic_cast<GLFWController*>(Controller::getCurrentController());
  			if (glfwC != NULL)
  			{
- 				glfwC->setRunWaitsForAnEvent(false);
+ 			//	glfwC->setRunWaitsForAnEvent(false);
  			}
 	    
 	
-	}else if (key == 'w' || key =='s'){
+	} 
+	
+	if (w_down || s_down){
 	  cryph::AffVector v = eye -center;
+	  float length = v.length();
+	  cryph::AffVector dir = up * ((w_down)? 1 : -1);
+	  dir.normalize();
+	  dir *=mvsize;
+	  cryph::AffVector newVec = v + dir;
+	  newVec.normalize();
+	  newVec*=length;
+	  eye = center + newVec;
 	  
+	  //fix up. He's a bit of a fixer upper.
+	  cryph::AffVector temp1 = up.cross(newVec);
+	  //temp1 is pointing to the "right" from the eye-ish point of view. right hand rule, recalling that newVec is pointing TOWARD the eye pos. 
+	  up = newVec.cross(temp1);
+	  up.normalize();
+	  
+	  
+	  
+	/*  
 	//  std::cout << "this is the v vector" << v.dx << ", " << v.dy << ", " << v.dz  << "\n";
 	  //std::cout << "EYE BEFORE" << eye.x << ", " << eye.y << ", " << eye.z  << "\n";
 	  
@@ -235,7 +449,7 @@ void Column::handleCommand(unsigned char key, double ldsX, double ldsY)
 	  
 	   up =up + (sin(delta_eye)*b) * tempV * ((key=='s')? -1: 1);
 	   up.normalize();
-	  eye = center + (cos(delta_eye)*r)*v + (sin(delta_eye)*r)*mvThisWay;
+	  eye = center + (cos(delta_eye)*r)*v + (sin(delta_eye)*r)*mvThisWay;*/
 	  
 	 
 	//     std::cout << "EYE AFTER" << eye.x << ", " << eye.y << ", " << eye.z ;
@@ -244,15 +458,15 @@ void Column::handleCommand(unsigned char key, double ldsX, double ldsY)
  				dynamic_cast<GLFWController*>(Controller::getCurrentController());
  			if (glfwC != NULL)
  			{
- 				glfwC->setRunWaitsForAnEvent(false);
+ 				//glfwC->setRunWaitsForAnEvent(false);
  			}
 	    
 	
-	}
-
-
+	} 
+  
+  
+  
 }
-
 void Column::setBounds()
 {
   //cryph::AffVector direction =(top - bottom).normalize(); I'll come back to proper bounding when in clear thought
@@ -326,7 +540,9 @@ void Column::render()
 	    glEnableVertexAttribArray(pvaLoc_mcNormal);
 	  
 	}
-
+	
+	
+	myhandleKeys();
 	glUseProgram(pgm);
 }
 

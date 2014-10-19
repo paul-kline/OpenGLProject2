@@ -7,7 +7,9 @@
 #include "Block.h"
 #include "Cylinder.h"
 #include "Stairs.h"
-
+#include "HalfColumn.h"
+#include "FancyColumn.h"
+#include "SuperFancyColumn.h"
 void set3DViewingInformation(double xyz[6])
 {
 	ModelView::setMCRegionOfInterest(xyz);
@@ -80,28 +82,95 @@ int main(int argc, char* argv[])
 	Column column1(bottom1,1,top1,3,color1,true);
 	c.addModel(&column1);
 	
-	cryph::AffPoint bottom2(5,6,7);
-	cryph::AffPoint top2(4,4,4);
-	float color2[3] = {0,1,0};
-	Column column2(bottom2,2,top2,2,color2,true);
-	double bounds[6];
-	column1.getMCBoundingBox(bounds);
-	c.addModel(&column2);
+	
 //	std::cout << "colum1 bounds: " << bounds[0] << ", " << bounds[1] <<  bounds[2] << ", " << bounds[3] <<  bounds[4] << ", " << bounds[5] << "\n\ndone!";
 	
-	//block test;
-	float color3[3] = {1.0,0.3,0.7};
-	Block block1(2, 5, 2, cryph::AffVector(0,1,0), cryph::AffPoint(-4,-6,8) ,cryph::AffPoint(-4,-6,2), color3);
-//	c.addModel(&block1);
+	
+	double bounds2[6];
+	//stairs.getMCBoundingBox(bounds2);
+//	c.addModel(&column2);
+	//std::cout << "stair bounds: " << bounds2[0] << ", " << bounds2[1] <<", " <<  bounds2[2] << ", " << bounds2[3] <<", " <<   bounds2[4] << ", " << bounds2[5] << "\n\ndone!";
+	
+	
+	//begin real project stuff;
+	// base block ;
+	float groundColor[3] = {0.000, 0.392, 0.000}; // dark green
+	Block ground(1,200, 300, cryph::AffVector(0,1,0), cryph::AffPoint(-100,-1,0) ,cryph::AffPoint(100,-1,0), groundColor);
+	c.addModel(&ground);
+	
+	cryph::AffPoint buildingFrontLeft(-50, 0,-80); // most important point to define!!
+	cryph::AffPoint buildingFrontRight(50,0,-80); // this is fixed if stupid, but will be corrected to a ray specified by (right-left) vector. 
+	cryph::AffVector buildingUpVector(0,1,0);
+	float buildingHeight=30;
+	float buildingWidth = 100;
+	float buildingLength = 30;
+	float buildingColor[3] = {0.961, 0.871, 0.702}; //wheat
+	//just to check myself
+	if( (buildingFrontLeft-buildingFrontRight).length() != buildingWidth){
+	    cryph::AffVector v1 = buildingFrontRight-buildingFrontLeft;
+	    v1.normalize();
+	    v1*=buildingWidth;
+	    buildingFrontRight = buildingFrontLeft + v1;
+	}
+	Block building(buildingHeight,buildingWidth, buildingLength, buildingUpVector, buildingFrontLeft ,buildingFrontRight, buildingColor);
+	c.addModel(&building);
+	
+	cryph::AffPoint stairsBackCenter = (buildingFrontLeft + buildingFrontRight) /2;
+	float stairWidthPercentOfBuildingFront = 0.70;
+	float stairWidth = stairWidthPercentOfBuildingFront * buildingWidth;
+	cryph::AffPoint stairsBackLeft = stairsBackCenter - ((buildingFrontRight - buildingFrontLeft)*stairWidthPercentOfBuildingFront)/2;
+	cryph::AffPoint stairsBackRight = stairsBackCenter + ((buildingFrontRight - buildingFrontLeft)*stairWidthPercentOfBuildingFront)/2;
+	cryph::AffVector towardsBuildingBack = buildingUpVector.cross((buildingFrontRight-buildingFrontLeft));
+	towardsBuildingBack.normalize();
+	float stairLengthPercentOfBuildingFront = 0.35;
+	float stairLength = stairLengthPercentOfBuildingFront * buildingWidth;
+	cryph::AffVector getUsToStairfront =  (-towardsBuildingBack)*stairLength;
+	cryph::AffPoint stairFrontLeft = stairsBackLeft + getUsToStairfront;
+	cryph::AffPoint stairFrontRight = stairsBackRight + getUsToStairfront;
+	
+	float stairHeightPercentOfBuildingHeight = 1;
+	int numStairs = 9;
+	float eachStepHeight = (stairHeightPercentOfBuildingHeight * buildingHeight)/numStairs; 
 	
 	//stairs test
-	Stairs stairs(2, 5, 2, cryph::AffVector(0,1,0), cryph::AffPoint(-4,0,8) ,cryph::AffPoint(-4,0,2), color3, 
-		      0.2, 10, false);
+	Stairs stairs(eachStepHeight, stairWidth, stairLength, buildingUpVector, stairFrontLeft ,stairFrontRight, buildingColor, 
+		      eachStepHeight, numStairs, true);
 
-	double bounds2[6];
-	stairs.getMCBoundingBox(bounds2);
-//	c.addModel(&column2);
-	std::cout << "stair bounds: " << bounds2[0] << ", " << bounds2[1] <<", " <<  bounds2[2] << ", " << bounds2[3] <<", " <<   bounds2[4] << ", " << bounds2[5] << "\n\ndone!";
+	
+	
+	
+	
+	//test a half cylinder
+
+	float color2[3] = {0,1,0};
+	cryph::AffPoint startP = stairFrontLeft + (stairFrontRight - stairFrontLeft);
+	float myradius = (stairFrontRight-stairFrontLeft).length();
+	HalfColumn halfColumn( stairFrontLeft,myradius,(stairFrontLeft + (buildingUpVector*20)),200,color2,false,false, 3.14159/1,startP);
+	double bounds[6];
+	//column1.getMCBoundingBox(bounds);
+	c.addModel(&halfColumn);
+	/*
+	  cryph::AffPoint b(0,200,0);
+	   cryph::AffPoint t(0,220,0);
+	   cryph::AffPoint s(5,200,0);
+	   
+	*///   HalfColumn halfColumn1(b , 5, t,5,color2,false,false, 3.14159 ,s);
+	//c.addModel(&halfColumn1);
+	//test a fancy column
+	//FancyColumn(cryph::AffPoint bottom_,float bradius_, cryph::AffPoint top_, float tradius_, float color_[3], bool capped_, int numCircs_);
+	FancyColumn fancyColumn(stairFrontLeft, myradius, (stairFrontLeft + (buildingUpVector*20)), myradius, color2, false, 9);
+	
+	
+	
+	
+	//test super fancy column
+	
+	//SuperFancyColumn(float height_, float width_, cryph::AffPoint bottomLeft_,cryph::AffVector upVector_, cryph::AffVector toRightFrontVector_,float color_[3]);
+	SuperFancyColumn SuperFancyColumn(buildingHeight*4,buildingWidth,buildingFrontLeft + 2*buildingFrontRight, buildingUpVector, buildingFrontRight-buildingFrontLeft, buildingColor, 10);
+	//Block base (buildingHeight,buildingWidth, buildingWidth, buildingUpVector, buildingFrontLeft + 2*buildingFrontRight ,buildingFrontRight + 2*buildingFrontRight, buildingColor);
+	
+	//c.addModel(&base);
+	
 	
 	
 	glClearColor(1.0, 1.0, 0.70, 1.0);
