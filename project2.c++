@@ -36,7 +36,7 @@ void set3DViewingInformation(double xyz[6])
 	  maxDelta = delta;
 	}
 	double distEyeCenter = 2.0 * maxDelta;
-	cryph::AffPoint eye(xmid, ymid, zmid + distEyeCenter);
+	cryph::AffPoint eye(xmid-maxDelta/2, ymid+maxDelta/2, zmid + distEyeCenter);
 
 	cryph::AffVector up = cryph::AffVector::yu;
 	
