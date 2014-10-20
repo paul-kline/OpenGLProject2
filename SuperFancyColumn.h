@@ -8,7 +8,7 @@
 #include "Block.h"
 #include "Column.h"
 #include "FancyColumn.h"
-class SuperFancyColumn
+class SuperFancyColumn : public ModelViewWithLighting
 {
 public:
 	SuperFancyColumn(float height_, float width_, cryph::AffPoint bottomLeft_,cryph::AffVector upVector_, cryph::AffVector toRightFrontVector_,float color_[3], int numFancies_);
@@ -24,11 +24,11 @@ public:
 	FancyColumn fancyColumn;
 	Column lowerColumn;
 	Block baseBlock;
-	
+	void render();
 	cryph::AffPoint bottomLeft;
 	cryph::AffVector upVector;
 	cryph::AffVector toRightFrontVector;
-	
+	void getMCBoundingBox(double* xyzLimitsF) const;
 	
 
 private:

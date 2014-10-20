@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
 	//stairs test
 	Stairs stairs(eachStepHeight, stairWidth, stairLength, buildingUpVector, stairFrontLeft ,stairFrontRight, buildingColor, 
 		      eachStepHeight, numStairs, true);
-
+	c.addModel(&stairs);
 	
 	
 	
@@ -178,7 +178,8 @@ int main(int argc, char* argv[])
 	float gold[3] = {1.000, 0.843, 0.000};
 	SuperFancyColumn leftColumn(columnHeight,columnWidth ,buildingFrontLeft + buildingHeight*buildingUpVector, buildingUpVector, buildingFrontRight-buildingFrontLeft, gold, 10);
 	SuperFancyColumn rightColumn(columnHeight,columnWidth , rightColLeftPoint  , buildingUpVector, buildingFrontRight-buildingFrontLeft, gold, 10);
-	
+	c.addModel(&leftColumn);
+	c.addModel(&rightColumn);
 	
 	float heightSoFar = buildingHeight+columnHeight;
 	
@@ -233,7 +234,7 @@ int main(int argc, char* argv[])
 	float white[3]={1,1,1};
 	Stairs decorativeStairs1(decStairEachHeight,decorativeStairWidth, decorativeStairLength, buildingUpVector, backLeft_backLeftPoint ,backLeft_backRightPoint, white,
 	  eachDecStairWidth, 4, true);
-	//c.addModel(&decorativeStairs1);
+	c.addModel(&decorativeStairs1);
 	
 	
 	//flat roof

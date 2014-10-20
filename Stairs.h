@@ -41,7 +41,6 @@ private:
 	GLuint vbo[1];
 
 	void defineStairs();
-	void renderStairs(float * color);
 	void setBounds();
 
 	double calculateMax(int index);

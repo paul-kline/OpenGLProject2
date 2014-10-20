@@ -126,7 +126,7 @@ void Stairs::defineStairs()
 	length-= lengthShrinkSize;//(2*stepWidth);
 	leftPoint= leftPoint + (widthVector*stepWidth) + (lengthVector*stepWidth) + (height * mainNormal);
 	rightPoint= rightPoint + ((-widthVector)*stepWidth) + (lengthVector*stepWidth) + (height * mainNormal);
-	c->addModel(&blocks[i]);
+	//c->addModel(&blocks[i]);
       std::cout << "defining a bock!!!! " << c->getNumModels() << "\n";
       }
 
@@ -197,67 +197,13 @@ double Stairs::calculateMin(int index){
   return minval;  
 }
 
-void Stairs::renderStairs(vec3 color){
-/*	/*typedef float vec3[3];
-	//vec3 colColor = {1, 0.0, 0.0};
-	glUniform3fv(ppuLoc_kd, 1, color);
-	glBindVertexArray(vao[0]);
-	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*(NUM_AROUND_CIRCLE+1)); 
-  
-	 glDisableVertexAttribArray(pvaLoc_mcNormal);
-	 cryph::AffVector tempV = -lengthVector;
-	 glVertexAttrib3f(pvaLoc_mcNormal, tempV.dx,tempV.dy,tempV.dz);
-	 glDrawArrays(GL_TRIANGLE_FAN, 0, 4); 
-	 
-	 tempV = widthVector;
-	 glVertexAttrib3f(pvaLoc_mcNormal, tempV.dx,tempV.dy,tempV.dz);
-	 glDrawArrays(GL_TRIANGLE_FAN, 2, 4); 
-	 
-	 tempV = lengthVector;
-	 glVertexAttrib3f(pvaLoc_mcNormal, tempV.dx,tempV.dy,tempV.dz);
-	 glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
-	 
-	 //rest must be drawn special!!
-	 
-	 unsigned int temp[4]= {7,6,1,0};
-	 tempV = -widthVector;
-	 glVertexAttrib3f(pvaLoc_mcNormal, tempV.dx,tempV.dy,tempV.dz);
-	 glDrawElements(GL_TRIANGLE_FAN,4,GL_UNSIGNED_INT,  temp);
-	 
-	 
-	 //top
-	 temp[0]=6;
-	 temp[1]=1;
-	 temp[2]=2;
-	 temp[3]=5;
-	 
-	 tempV = mainNormal;
-	 glVertexAttrib3f(pvaLoc_mcNormal, tempV.dx,tempV.dy,tempV.dz);
-	 glDrawElements(GL_TRIANGLE_FAN,4,GL_UNSIGNED_INT,  temp);
-	 
-	  //bottom
-	 temp[0]=0;
-	 temp[1]=3;
-	 temp[2]=4;
-	 temp[3]=7;
-	 
-	 tempV = mainNormal;
-	 glVertexAttrib3f(pvaLoc_mcNormal, tempV.dx,tempV.dy,tempV.dz);
-	 glDrawElements(GL_TRIANGLE_FAN,4,GL_UNSIGNED_INT,  temp);
-	/* 
-	 glDrawElements(GL_TRIANGLE_FAN,(NUM_AROUND_CIRCLE+1),GL_UNSIGNED_INT,  bottomCap);
-	 glVertexAttrib3f(pvaLoc_mcNormal, direction.dx,direction.dy,direction.dz);
-	 glDrawElements(GL_TRIANGLE_FAN,(NUM_AROUND_CIRCLE+1),GL_UNSIGNED_INT,  topCap);
-	 glE*/
-	 //enableVertexAttribArray(pvaLoc_mcNormal);
-	 
-	 
-}
-
-
 
 void Stairs::render()
 {
+  
+  for(int i =0; i< numStairs; i++){
+   blocks[i].render(); 
+  }
   /*
 	GLint pgm;
 	glGetIntegerv(GL_CURRENT_PROGRAM, &pgm);

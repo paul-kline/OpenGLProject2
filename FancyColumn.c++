@@ -207,9 +207,9 @@ void FancyColumn::defineFancyColumn()
 	    HalfColumn* halfColumn = new HalfColumn( *bcenter_P, bRadius, *tcenter_P,tRadius,color,capped,true, radians ,*botherPoint_P);
 	    
 	    halfColumns[HalfColCounter++] = *halfColumn;
-	    double bounds[6];
+	    double bounds[6];c->addModel(halfColumn);
 	    //column1.getMCBoundingBox(bounds);
- 	   c->addModel(halfColumn);
+ 	    
 	  
 	}
 	
@@ -290,7 +290,8 @@ void FancyColumn::initializeCappingIndices()
 
 void FancyColumn::render()
 {
-	for(int i=0; i<numCircs; i++){
+ // std::cout << "numcircs: " << numCircs;
+	for(int i=numCircs-1; i>=0; i--){
 	  halfColumns[i].render();
 	  
 	}

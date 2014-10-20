@@ -85,10 +85,10 @@ void SuperFancyColumn::defineSuperFancyColumn()
   
   Controller* c = GLFWController::getCurrentController();
   
-  c->addModel(&baseBlock);
-  c->addModel(&topBlock);
-  c->addModel(&lowerColumn);
-  c->addModel(&topColumn);
+ // c->addModel(&baseBlock);
+ // c->addModel(&topBlock);
+ // c->addModel(&lowerColumn);
+ // c->addModel(&topColumn);
   
   
   
@@ -97,6 +97,23 @@ void SuperFancyColumn::defineSuperFancyColumn()
   
   
 }
+
+void SuperFancyColumn::render()
+{
+  baseBlock.render();
+  topBlock.render();
+  lowerColumn.render();
+  topColumn.render();
+  fancyColumn.render();
+  
+  
+  
+}
+void SuperFancyColumn::getMCBoundingBox(double* xyzLimitsF) const
+{
+
+}
+
 
 
 
