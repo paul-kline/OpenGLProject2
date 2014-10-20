@@ -29,7 +29,7 @@ FirePit::FirePit(float height_, float width_, cryph::AffPoint bottomLeft_,cryph:
  color[2] = color_[2];
  
  defineFirePit();
-
+  setBounds();
   black[0] =0.0; black[1] =0.0; black[2]=0.0;
  //for moving the eye.
   
@@ -82,7 +82,7 @@ void FirePit::defineFirePit()
   cryph::AffPoint topColumnBottom = lowercolumnbottom + (leadingcolHeight * upVector) + fancyColumnHeightPercentage*height*upVector ;
   
   //so it can hold something
-  Column* bufferColumn = (new Column(topColumnBottom ,leadingcolRadius , topColumnBottom+ (0.05*upVector) ,leadingcolRadius  ,color,true));
+  bufferColumn = (new Column(topColumnBottom ,leadingcolRadius , topColumnBottom+ (0.05*upVector) ,leadingcolRadius  ,color,true));
   
   topColumn = *(new Column(topColumnBottom ,leadingcolRadius , topColumnBottom+ (bowlHeight*upVector) ,bigRadius  ,color,false));
   
@@ -91,20 +91,49 @@ void FirePit::defineFirePit()
   fancyColumn = *(new FancyColumn( (lowercolumnbottom + leadingcolHeight*upVector) , smallerRadius, topColumnBottom, smallerRadius, color,true,numFancies));
   
   
-  Controller* c = GLFWController::getCurrentController();
-  c->addModel(&fancyColumn);
-  c->addModel(&baseBlock);
-  c->addModel(&lowerColumn);
-  c->addModel(&topColumn);
-  c->addModel(bufferColumn);
-  
-  
-  
-  
-  
+//  Controller* c = GLFWController::getCurrentController();
+//   c->addModel(&fancyColumn);
+//   c->addModel(&baseBlock);
+//   c->addModel(&lowerColumn);
+//   c->addModel(&topColumn);
+//   c->addModel(bufferColumn);
   
   
 }
+
+
+void FirePit::setBounds()
+{
+  double bounds1[6]; baseBlock.getMCBoundingBox(bounds1);
+  double bounds2[6]; bufferColumn->getMCBoundingBox(bounds2);
+  double bounds3[6]; lowerColumn.getMCBoundingBox(bounds3);
+  double bounds4[6]; topColumn.getMCBoundingBox(bounds4);
+  double bounds5[6]; fancyColumn.getMCBoundingBox(bounds5);
+  
+  for(int i=0; i<3; i++){
+    int j = 2*i;
+    myBounds[j] = std::min(bounds1[j], std::min(bounds2[j], std::min(bounds3[j], std::min(bounds4[j], bounds5[j]))));
+    myBounds[j+1] = std::max(bounds1[j+1], (std::max(bounds2[j+1], std::max(bounds3[j+1], std::max(bounds4[j+1], bounds5[j+1])))));
+  }
+
+}
+
+void FirePit::getMCBoundingBox(double* xyzLimitsF) const
+{
+    for(int i=0; i<6; i++){
+      xyzLimitsF[i] = myBounds[i];
+  }
+}
+void FirePit::render()
+{
+  baseBlock.render();
+  bufferColumn->render();
+  lowerColumn.render();
+  topColumn.render();
+  fancyColumn.render();
+}
+
+
 
 
 

@@ -18,7 +18,7 @@ public:
 	float height;
 	float width;
 	float color[3];
-	
+	float myBounds[6];
 	Block topBlock;
 	Column topColumn;
 	FancyColumn fancyColumn;
@@ -38,7 +38,7 @@ private:
 
 	//const int NUM_AROUND_CIRCLE = 100;
 	typedef float vec3[3];
-	
+	void setBounds();
 	void defineSuperFancyColumn();
 	bool displayCylEdges;
 	bool displayCylFill;

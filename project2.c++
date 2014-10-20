@@ -232,9 +232,29 @@ int main(int argc, char* argv[])
 	backLeft_backLeftPoint += decorativeStairLength*v;
 	backLeft_backRightPoint+= decorativeStairLength*v;
 	float white[3]={1,1,1};
+	int decStairNum=4;
 	Stairs decorativeStairs1(decStairEachHeight,decorativeStairWidth, decorativeStairLength, buildingUpVector, backLeft_backLeftPoint ,backLeft_backRightPoint, white,
-	  eachDecStairWidth, 4, true);
+	  eachDecStairWidth, decStairNum, true);
 	c.addModel(&decorativeStairs1);
+	cryph::AffPoint otherSideDecStairRight = backLeft_backLeftPoint+ (-v)*(2*decorativeStairLength + buildingWidth); //reflected of course.
+	cryph::AffPoint otherSideDecStairLeft = otherSideDecStairRight + (-towardsBuildingBack)*decorativeStairWidth;
+	Stairs decorativeStairs2(decStairEachHeight,decorativeStairWidth, decorativeStairLength, buildingUpVector, otherSideDecStairLeft ,otherSideDecStairRight, white,
+	  eachDecStairWidth, decStairNum, true);
+	c.addModel(&decorativeStairs2);
+	
+	cryph::AffVector shiftToFrontV = (-towardsBuildingBack)*(mainBuilding.length - decorativeStairWidth);
+	cryph::AffPoint decStairFrontLeft_Left = backLeft_backLeftPoint + shiftToFrontV;
+	cryph::AffPoint decStairFrontLeft_Right = backLeft_backRightPoint + shiftToFrontV;
+	Stairs decorativeStairs3(decStairEachHeight,decorativeStairWidth, decorativeStairLength, buildingUpVector, decStairFrontLeft_Left ,decStairFrontLeft_Right, white,
+	  eachDecStairWidth, decStairNum, true);
+	c.addModel(&decorativeStairs3);
+	
+	cryph::AffPoint decStairFrontRight_Left = otherSideDecStairLeft + shiftToFrontV;
+	cryph::AffPoint decStairFrontRight_Right = otherSideDecStairRight+ shiftToFrontV;
+	Stairs decorativeStairs4(decStairEachHeight,decorativeStairWidth, decorativeStairLength, buildingUpVector, decStairFrontRight_Left ,decStairFrontRight_Right, white,
+	  eachDecStairWidth, decStairNum, true);
+	c.addModel(&decorativeStairs4);
+	
 	
 	
 	//flat roof
@@ -404,14 +424,14 @@ int main(int argc, char* argv[])
 	cryph::AffPoint firePitRight = firePitCenter - v*(firePitWidth/2);
 	//float height_, float width_, cryph::AffPoint bottomLeft_,cryph::AffVector upVector_, cryph::AffVector toRightFrontVector_,float color_[3], int numFancies_){
 	FirePit firepit(buildingHeight*1.2, firePitWidth, firePitLeft, buildingUpVector, firePitRight-firePitLeft, burlywood, 12);
-	  
+	  c.addModel(&firepit);
 	
 	
 	//other firepit
 	cryph::AffPoint otherFireLeftPoint = firePitRight + v*(buildingWidth);
 	cryph::AffPoint otherFireRightPoint = otherFireLeftPoint + (-v)*firePitWidth;
 	FirePit firepit2(buildingHeight*1.2, firePitWidth, otherFireLeftPoint, buildingUpVector, firePitRight-firePitLeft, burlywood, 12);
-	  
+	  c.addModel(&firepit2);
 	
 	double xyz[6];
 	c.getOverallMCBoundingBox(xyz);

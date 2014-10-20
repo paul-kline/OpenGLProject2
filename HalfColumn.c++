@@ -178,14 +178,14 @@ void HalfColumn::setBounds()
 {
   //cryph::AffVector direction =(top - bottom).normalize(); I'll come back to proper bounding when in clear thought
   //x
-  myBounds[0] = fmin(bottom.x, top.x) - fmax(bradius, tradius);
-  myBounds[1] = fmax(bottom.x, top.x) + fmax(bradius, tradius);
+  myBounds[0] = std::min(bottom.x, top.x) - std::max(bradius, tradius);
+  myBounds[1] = std::max(bottom.x, top.x) + std::max(bradius, tradius);
   //y
-  myBounds[2] = fmin(bottom.y, top.y) - fmax(bradius, tradius);
-  myBounds[3] = fmax(bottom.y, top.y) + fmax(bradius, tradius);
+  myBounds[2] = std::min(bottom.y, top.y) - std::max(bradius, tradius);
+  myBounds[3] = std::max(bottom.y, top.y) + std::max(bradius, tradius);
   //z
-  myBounds[4] = fmin(bottom.z, top.z) - fmax(bradius, tradius);
-  myBounds[5] = fmax(bottom.z, top.z) + fmax(bradius, tradius);
+  myBounds[4] = std::min(bottom.z, top.z) - std::max(bradius, tradius);
+  myBounds[5] = std::max(bottom.z, top.z) + std::max(bradius, tradius);
   
   
 }

@@ -3,6 +3,7 @@
 #include "SuperFancyColumn.h"
 #include "ShaderIF.h"
 #include <cmath>
+#include <algorithm> 
 #include "GLFWController.h"
 #include "HalfColumn.h"
 #include "Block.h"
@@ -29,7 +30,7 @@ SuperFancyColumn::SuperFancyColumn(float height_, float width_, cryph::AffPoint 
  color[2] = color_[2];
  
  defineSuperFancyColumn();
-
+ setBounds();
   black[0] =0.0; black[1] =0.0; black[2]=0.0;
  //for moving the eye.
   
@@ -83,7 +84,7 @@ void SuperFancyColumn::defineSuperFancyColumn()
   fancyColumn = *(new FancyColumn( (lowercolumnbottom + leadingcolHeight*upVector) , smallerRadius, topColumnBottom, smallerRadius, color,false,numFancies));
   
   
-  Controller* c = GLFWController::getCurrentController();
+ // Controller* c = GLFWController::getCurrentController();
   
  // c->addModel(&baseBlock);
  // c->addModel(&topBlock);
@@ -109,8 +110,28 @@ void SuperFancyColumn::render()
   
   
 }
+void SuperFancyColumn::setBounds()
+{
+  double bounds1[6]; baseBlock.getMCBoundingBox(bounds1);
+  double bounds2[6]; topBlock.getMCBoundingBox(bounds2);
+  double bounds3[6]; lowerColumn.getMCBoundingBox(bounds3);
+  double bounds4[6]; topColumn.getMCBoundingBox(bounds4);
+  double bounds5[6]; fancyColumn.getMCBoundingBox(bounds5);
+  
+  for(int i=0; i<3; i++){
+    int j = 2*i;
+    myBounds[j] = std::min(bounds1[j], std::min(bounds2[j], std::min(bounds3[j], std::min(bounds4[j], bounds5[j]))));
+    myBounds[j+1] = std::max(bounds1[j+1], (std::max(bounds2[j+1], std::max(bounds3[j+1], std::max(bounds4[j+1], bounds5[j+1])))));
+  }
+}
+
 void SuperFancyColumn::getMCBoundingBox(double* xyzLimitsF) const
 {
+  for(int i=0; i<6; i++){
+      xyzLimitsF[i] = myBounds[i];
+  }
+  
+ 
 
 }
 

@@ -103,9 +103,9 @@ void Stairs::defineStairs()
   
  
 
-  Controller* c = GLFWController::getCurrentController();
+ // Controller* c = GLFWController::getCurrentController();
   
-   std::cout << "defining stairs. c:" << c << "\n";
+  // std::cout << "defining stairs. c:" << c << "\n";
  
   cryph::AffPoint leftPoint= frontLeftBottomCorner;
   cryph::AffPoint rightPoint=frontRightBottomCorner;
@@ -127,11 +127,11 @@ void Stairs::defineStairs()
 	leftPoint= leftPoint + (widthVector*stepWidth) + (lengthVector*stepWidth) + (height * mainNormal);
 	rightPoint= rightPoint + ((-widthVector)*stepWidth) + (lengthVector*stepWidth) + (height * mainNormal);
 	//c->addModel(&blocks[i]);
-      std::cout << "defining a bock!!!! " << c->getNumModels() << "\n";
+   //   std::cout << "defining a bock!!!! " << c->getNumModels() << "\n";
       }
 
       
-         std::cout << "defining stairs" << c->getNumModels() << "\n";
+      //   std::cout << "defining stairs" << c->getNumModels() << "\n";
 
     
  

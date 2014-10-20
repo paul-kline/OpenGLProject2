@@ -14,7 +14,7 @@ public:
 
 	cryph::AffPoint bottom;
 	cryph::AffPoint top;
-	float myBounds[6];
+	double myBounds[6];
 	float color[3];
 	float bradius;
 	float tradius;

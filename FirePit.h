@@ -8,7 +8,7 @@
 #include "Block.h"
 #include "Column.h"
 #include "FancyColumn.h"
-class FirePit
+class FirePit : public ModelViewWithLighting
 {
 public:
 	FirePit(float height_, float width_, cryph::AffPoint bottomLeft_,cryph::AffVector upVector_, cryph::AffVector toRightFrontVector_,float color_[3], int numFancies_);
@@ -18,17 +18,21 @@ public:
 	float height;
 	float width;
 	float color[3];
-	
+	double myBounds[6];
 
 	Column topColumn;
 	FancyColumn fancyColumn;
 	Column lowerColumn;
 	Block baseBlock;
+	Column* bufferColumn;
+	
 	
 	cryph::AffPoint bottomLeft;
 	cryph::AffVector upVector;
 	cryph::AffVector toRightFrontVector;
 	
+	void getMCBoundingBox(double* xyzLimitsF) const;
+	void render();
 	
 
 private:
@@ -38,6 +42,8 @@ private:
 
 	//const int NUM_AROUND_CIRCLE = 100;
 	typedef float vec3[3];
+	
+	void setBounds();
 	
 	void defineFirePit();
 	bool displayCylEdges;

@@ -259,18 +259,26 @@ cryph::AffVector FancyColumn::defineStarter(){
 
 void FancyColumn::setBounds()
 {
-  //cryph::AffVector direction =(top - bottom).normalize(); I'll come back to proper bounding when in clear thought
-  //x
-  myBounds[0] = fmin(bottom.x, top.x) - fmax(bradius, tradius);
-  myBounds[1] = fmax(bottom.x, top.x) + fmax(bradius, tradius);
-  //y
-  myBounds[2] = fmin(bottom.y, top.y) - fmax(bradius, tradius);
-  myBounds[3] = fmax(bottom.y, top.y) + fmax(bradius, tradius);
-  //z
-  myBounds[4] = fmin(bottom.z, top.z) - fmax(bradius, tradius);
-  myBounds[5] = fmax(bottom.z, top.z) + fmax(bradius, tradius);
   
-  
+  //double extremeBounds[6];
+  halfColumns[0].getMCBoundingBox(myBounds); 
+    
+  for(int i=1; i<numCircs; i++){
+    double currentBounds[6];   
+    halfColumns[i].getMCBoundingBox(currentBounds); 
+    for(int j = 0; j<3; j++){
+	int k= j*2;
+	if(currentBounds[k] < myBounds[k]){
+	  myBounds[k] = currentBounds[k];
+	}
+	if(currentBounds[k+1] > myBounds[k+1]){
+	  myBounds[k+1] = currentBounds[k+1];
+	  
+	}
+      
+    }   
+  }
+
 }
 
 
@@ -290,10 +298,10 @@ void FancyColumn::initializeCappingIndices()
 
 void FancyColumn::render()
 {
- // std::cout << "numcircs: " << numCircs;
-	for(int i=numCircs-1; i>=0; i--){
+ //std::cout << "numcircs: " << numCircs;
+	for(int i=0; i<numCircs; i++){
 	  halfColumns[i].render();
-	  
+	 // std::cout << "I am here: " << i << "\n\n\n";
 	}
 }
 
