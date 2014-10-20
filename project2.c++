@@ -1,7 +1,6 @@
 // project2.c++: Starter for EECS 672 Project 2
 
 #include "GLFWController.h"
-#include "TEMPLATE_Subclass.h"
 #include "Simpleshape.h"
 #include "Column.h"
 #include "Block.h"
@@ -10,6 +9,7 @@
 #include "HalfColumn.h"
 #include "FancyColumn.h"
 #include "SuperFancyColumn.h"
+#include "FirePit.h"
 void set3DViewingInformation(double xyz[6])
 {
 	ModelView::setMCRegionOfInterest(xyz);
@@ -55,7 +55,7 @@ void set3DViewingInformation(double xyz[6])
 	// the EC system established above, then:
 
 	zpp = -(distEyeCenter - 0.5*maxDelta);
-	zmin = zpp - 1.5*maxDelta;
+	zmin = zpp - 2*maxDelta;
 	zmax = zpp + maxDelta; //changed from half maxDelta
 	ModelView::setProjection(PERSPECTIVE);
 	ModelView::setProjectionPlaneZ(zpp);
@@ -79,8 +79,8 @@ int main(int argc, char* argv[])
 	cryph::AffPoint bottom1(-1.0,2,9);
 	cryph::AffPoint top1(1,1,1);
 	float color1[3] = {1,1,0};
-	Column column1(bottom1,1,top1,3,color1,true);
-	c.addModel(&column1);
+	//Column column1(bottom1,1,top1,3,color1,true);
+	//c.addModel(&column1);
 	
 	
 //	std::cout << "colum1 bounds: " << bounds[0] << ", " << bounds[1] <<  bounds[2] << ", " << bounds[3] <<  bounds[4] << ", " << bounds[5] << "\n\ndone!";
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
 	//begin real project stuff;
 	// base block ;
 	float groundColor[3] = {0.000, 0.392, 0.000}; // dark green
-	Block ground(1,200, 300, cryph::AffVector(0,1,0), cryph::AffPoint(-100,-1,0) ,cryph::AffPoint(100,-1,0), groundColor);
+	Block ground(1,200, 500, cryph::AffVector(0,1,0), cryph::AffPoint(-100,-1,100) ,cryph::AffPoint(100,-1,100), groundColor);
 	c.addModel(&ground);
 	
 	cryph::AffPoint buildingFrontLeft(-50, 0,-80); // most important point to define!!
@@ -145,10 +145,10 @@ int main(int argc, char* argv[])
 	float color2[3] = {0,1,0};
 	cryph::AffPoint startP = stairFrontLeft + (stairFrontRight - stairFrontLeft);
 	float myradius = (stairFrontRight-stairFrontLeft).length();
-	HalfColumn halfColumn( stairFrontLeft,myradius,(stairFrontLeft + (buildingUpVector*20)),200,color2,false,false, 3.14159/1,startP);
+	//HalfColumn halfColumn( stairFrontLeft,myradius,(stairFrontLeft + (buildingUpVector*20)),200,color2,false,false, 3.14159/1,startP);
 	double bounds[6];
 	//column1.getMCBoundingBox(bounds);
-	c.addModel(&halfColumn);
+	//c.addModel(&halfColumn);
 	/*
 	  cryph::AffPoint b(0,200,0);
 	   cryph::AffPoint t(0,220,0);
@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
 	//c.addModel(&halfColumn1);
 	//test a fancy column
 	//FancyColumn(cryph::AffPoint bottom_,float bradius_, cryph::AffPoint top_, float tradius_, float color_[3], bool capped_, int numCircs_);
-	FancyColumn fancyColumn(stairFrontLeft, myradius, (stairFrontLeft + (buildingUpVector*20)), myradius, color2, false, 9);
+	//FancyColumn fancyColumn(stairFrontLeft, myradius, (stairFrontLeft + (buildingUpVector*20)), myradius, color2, false, 9);
 	
 	
 	
@@ -166,20 +166,260 @@ int main(int argc, char* argv[])
 	//test super fancy column
 	
 	//SuperFancyColumn(float height_, float width_, cryph::AffPoint bottomLeft_,cryph::AffVector upVector_, cryph::AffVector toRightFrontVector_,float color_[3]);
-	SuperFancyColumn SuperFancyColumn(buildingHeight*4,buildingWidth,buildingFrontLeft + 2*buildingFrontRight, buildingUpVector, buildingFrontRight-buildingFrontLeft, buildingColor, 10);
-	//Block base (buildingHeight,buildingWidth, buildingWidth, buildingUpVector, buildingFrontLeft + 2*buildingFrontRight ,buildingFrontRight + 2*buildingFrontRight, buildingColor);
+	float burlywood[3] ={0.871, 0.722, 0.529};
+	float columnHeight= buildingHeight*4;
+	float columnWidth = buildingWidth/4;
 	
-	//c.addModel(&base);
+	cryph::AffPoint rightColRightPoint = buildingFrontRight + buildingHeight*buildingUpVector;
+	cryph::AffVector v = buildingFrontLeft-buildingFrontRight;
+	v.normalize();
+	cryph::AffPoint rightColLeftPoint = rightColRightPoint + (v*columnWidth);
+	float goldRod[3] = {0.855, 0.647, 0.125};
+	float gold[3] = {1.000, 0.843, 0.000};
+	SuperFancyColumn leftColumn(columnHeight,columnWidth ,buildingFrontLeft + buildingHeight*buildingUpVector, buildingUpVector, buildingFrontRight-buildingFrontLeft, gold, 10);
+	SuperFancyColumn rightColumn(columnHeight,columnWidth , rightColLeftPoint  , buildingUpVector, buildingFrontRight-buildingFrontLeft, gold, 10);
 	
 	
+	float heightSoFar = buildingHeight+columnHeight;
 	
+	//building(buildingHeight,buildingWidth, buildingLength, buildingUpVector, buildingFrontLeft ,buildingFrontRight, buildingColor);
+	Block mainBuilding(heightSoFar, buildingWidth, buildingLength*8, buildingUpVector,(buildingFrontLeft+ towardsBuildingBack*buildingLength), buildingFrontRight-buildingFrontLeft, buildingColor);
+	c.addModel(&mainBuilding);
+	
+	
+	//more building!
+	cryph::AffPoint insertLeftSideLeftPoint = buildingFrontLeft + (towardsBuildingBack*columnWidth) + buildingUpVector*buildingHeight;
+	cryph::AffPoint insertLeftSideRightPoint = insertLeftSideLeftPoint + (-v)*buildingWidth*(1.0/3.0);
+	float insertHeight = heightSoFar - buildingHeight;
+	float insertWidth = (insertLeftSideRightPoint-insertLeftSideLeftPoint).length();
+	float insertLength = buildingLength - columnWidth;
+	Block leftBlockInsert(insertHeight,insertWidth, insertLength, buildingUpVector, insertLeftSideLeftPoint,insertLeftSideRightPoint, buildingColor);
+	c.addModel(&leftBlockInsert);
+	
+	cryph::AffPoint insertRightSideRightPoint = insertLeftSideLeftPoint + buildingWidth*(-v);
+	cryph::AffPoint insertRigthSideLeftPoint = insertRightSideRightPoint + v*insertWidth;
+	Block rightBlockInsert(insertHeight,insertWidth, insertLength, buildingUpVector, insertRigthSideLeftPoint ,insertRightSideRightPoint, buildingColor);
+	c.addModel(&rightBlockInsert);
+	
+	float insertMiddleHeight = (1.0/4.0)*heightSoFar;
+	float insertMiddleWidth = buildingWidth - (2*insertWidth);
+	cryph::AffPoint middleInsertLeftSide = insertLeftSideRightPoint + (heightSoFar - (insertMiddleHeight+ buildingHeight))*buildingUpVector;
+	cryph::AffPoint middleInsertRightSide = insertRigthSideLeftPoint + (heightSoFar - (insertMiddleHeight+ buildingHeight))*buildingUpVector;
+	Block insertMiddleBlock(insertMiddleHeight,insertMiddleWidth, insertLength, buildingUpVector, middleInsertLeftSide ,middleInsertRightSide, buildingColor);
+	c.addModel(&insertMiddleBlock);
+	
+	
+	//black doorway
+	float doorHeight = heightSoFar - (insertMiddleHeight + buildingHeight);
+	float doorWidth = insertMiddleWidth;
+	cryph::AffPoint doorLeftPoint = insertLeftSideRightPoint  + towardsBuildingBack*(insertLength*(4.0/5.0)); //move it forward just a little bit.
+	cryph::AffPoint doorRightPoint = insertRigthSideLeftPoint + towardsBuildingBack*(insertLength*(4.0/5.0)); // same as the prior
+	float black[3]={0,0,0};
+	Block doorWay(doorHeight,doorWidth, (1), buildingUpVector, doorLeftPoint ,doorRightPoint, black);
+	c.addModel(&doorWay);
+	
+	//decorative backStairs
+	float decorativeStairWidth = mainBuilding.length/7;
+	float decorativeStairLength= mainBuilding.width/12;
+	
+	float numDecStairs = 4;
+	float decStairEachHeight = mainBuilding.height/numDecStairs;
+	float eachDecStairWidth = decorativeStairLength / numDecStairs; 
+	cryph::AffPoint backLeft_backLeftPoint = mainBuilding.frontLeftBottomCorner + mainBuilding.getTowardsBackUnitVec()*mainBuilding.length;
+	cryph::AffPoint backLeft_backRightPoint= mainBuilding.frontLeftBottomCorner + mainBuilding.getTowardsBackUnitVec()*(mainBuilding.length-decorativeStairWidth);
+	//just kidding, they need to come off the wall some.
+	backLeft_backLeftPoint += decorativeStairLength*v;
+	backLeft_backRightPoint+= decorativeStairLength*v;
+	float white[3]={1,1,1};
+	Stairs decorativeStairs1(decStairEachHeight,decorativeStairWidth, decorativeStairLength, buildingUpVector, backLeft_backLeftPoint ,backLeft_backRightPoint, white,
+	  eachDecStairWidth, 4, true);
+	//c.addModel(&decorativeStairs1);
+	
+	
+	//flat roof
+	float roofHeight = mainBuilding.height * (1.0/13.0);
+	float roofLength = mainBuilding.length + building.length;
+	Block roof(roofHeight, buildingWidth,roofLength, buildingUpVector, building.frontLeftBottomCorner + (heightSoFar*buildingUpVector), building.frontRightBottomCorner + (heightSoFar*buildingUpVector), burlywood);
+	c.addModel(&roof);
 	glClearColor(1.0, 1.0, 0.70, 1.0);
 
+	
+	
+	
+	
+	//place cones on roof
+	int numAlongTopLength = 20;
+	float spacing = roofLength* (1.0/(numAlongTopLength + (numAlongTopLength -1))); //same size for the thing and the space between it and width!. 
+	float coneHeight = mainBuilding.height/15;
+	float bottomRadius = spacing/2;
+	float topRadius = bottomRadius/30;
+	cryph::AffPoint firstConeCenter = roof.frontLeftBottomCorner + (spacing/2)*(-v) + (spacing/2)*roof.getTowardsBackUnitVec() + roof.height*buildingUpVector;
+	
+// 	Column column = *(new Column( firstConeCenter, bottomRadius, firstConeCenter + buildingUpVector*coneHeight, topRadius, gold, true));
+// 	c.addModel(&column);
+// 	cryph::AffPoint previousCenter = firstConeCenter - (mainBuilding.getTowardsBackUnitVec()*2*spacing);
+// 	cryph::AffPoint centerP=previousCenter;
+	cryph::AffVector mvDir2 = mainBuilding.getTowardsBackUnitVec();
+	for(int i=0; i<numAlongTopLength; i++){
+	  float newx;
+	  float newy;
+	  float newz;
+	  float newxt;
+	  float newyt;
+	  float newzt;
+	  
+	  cryph::AffPoint tempB = firstConeCenter + i*(2*spacing)*mvDir2;
+	  newx = tempB.x;
+	  newy = tempB.y;
+	  newz = tempB.z;
+	  
+	  cryph::AffPoint tempT = tempB + coneHeight*buildingUpVector;
+	  newxt = tempT.x;
+	  newyt = tempT.y;
+	  newzt = tempT.z;
+	 //Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, float tradius_, float color_[6], bool capped_){
+	  cryph::AffPoint bottomP = (*(new cryph::AffPoint(newx,newy,newz)));
+	  cryph::AffPoint topP = (*(new cryph::AffPoint(newxt,newyt,newzt)));
+	  std::cout << "feifjeifjeifj: " << bottomP.x << ", " << bottomP.y << ", " << bottomP.z << "\n";
+	   Column* column = (new Column( bottomP, bottomRadius, topP, topRadius, gold, true));
+//  	 Column column = *(new Column( *(new cryph::AffPoint(newx,newy,newz)), bottomRadius, *(new cryph::AffPoint(newxt,newyt,newzt)), topRadius, gold, true));
+	 c.addModel(column);
+	  
+	  
+	}
+	firstConeCenter += (buildingWidth-(spacing))*(-v);
+	//now do otherside;
+	for(int i=0; i<numAlongTopLength; i++){
+	  float newx;
+	  float newy;
+	  float newz;
+	  float newxt;
+	  float newyt;
+	  float newzt;
+	  
+	  cryph::AffPoint tempB = firstConeCenter + i*(2*spacing)*mvDir2;
+	  newx = tempB.x;
+	  newy = tempB.y;
+	  newz = tempB.z;
+	  
+	  cryph::AffPoint tempT = tempB + coneHeight*buildingUpVector;
+	  newxt = tempT.x;
+	  newyt = tempT.y;
+	  newzt = tempT.z;
+	 //Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, float tradius_, float color_[6], bool capped_){
+	  cryph::AffPoint bottomP = (*(new cryph::AffPoint(newx,newy,newz)));
+	  cryph::AffPoint topP = (*(new cryph::AffPoint(newxt,newyt,newzt)));
+	  std::cout << "feifjeifjeifj: " << bottomP.x << ", " << bottomP.y << ", " << bottomP.z << "\n";
+	   Column* column = (new Column( bottomP, bottomRadius, topP, topRadius, gold, true));
+//  	 Column column = *(new Column( *(new cryph::AffPoint(newx,newy,newz)), bottomRadius, *(new cryph::AffPoint(newxt,newyt,newzt)), topRadius, gold, true));
+	 c.addModel(column);
+	  
+	  
+	}	
+	//now do along front
+	
+	float spaceToFill = buildingWidth - 2*spacing;
+	int newNumToFit = round(numAlongTopLength*spaceToFill/roofLength);
+// 	//how many spaces do I have?
+// 	float spaces = spaceToFill/spacing;
+// 	float newSpacing = spaceToFill/spaces;
+// 	int numberToFit = (spaceToFill/newSpacing)
+	float newSpacing =  spaceToFill* (1.0/(newNumToFit + (newNumToFit -1)));
+	float newbottomRadius = newSpacing/2;
+	float newtopRadius = newbottomRadius/30;
+	
+	//reset the direction
+	mvDir2 = v;
+	//move the starting point.
+	firstConeCenter+= mvDir2*(spacing/2) + mvDir2*newSpacing/2;
+	for(int i=0; i<newNumToFit; i++){
+	  float newx;
+	  float newy;
+	  float newz;
+	  float newxt;
+	  float newyt;
+	  float newzt;
+	  
+	  cryph::AffPoint tempB = firstConeCenter + i*(2*newSpacing)*mvDir2;
+	  newx = tempB.x;
+	  newy = tempB.y;
+	  newz = tempB.z;
+	  
+	  cryph::AffPoint tempT = tempB + coneHeight*buildingUpVector;
+	  newxt = tempT.x;
+	  newyt = tempT.y;
+	  newzt = tempT.z;
+	 //Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, float tradius_, float color_[6], bool capped_){
+	  cryph::AffPoint bottomP = (*(new cryph::AffPoint(newx,newy,newz)));
+	  cryph::AffPoint topP = (*(new cryph::AffPoint(newxt,newyt,newzt)));
+	  std::cout << "feifjeifjeifj: " << bottomP.x << ", " << bottomP.y << ", " << bottomP.z << "\n";
+	   Column* column = (new Column( bottomP, newbottomRadius, topP, newtopRadius, gold, true));
+//  	 Column column = *(new Column( *(new cryph::AffPoint(newx,newy,newz)), bottomRadius, *(new cryph::AffPoint(newxt,newyt,newzt)), topRadius, gold, true));
+	 c.addModel(column);
+	  
+	  
+	}
+	
+	//repeat along back
+	//reset the direction
+	
+	//move the starting point.
+	firstConeCenter+= (roofLength-newSpacing)*mainBuilding.getTowardsBackUnitVec();
+	for(int i=0; i<newNumToFit; i++){
+	  float newx;
+	  float newy;
+	  float newz;
+	  float newxt;
+	  float newyt;
+	  float newzt;
+	  
+	  cryph::AffPoint tempB = firstConeCenter + i*(2*newSpacing)*mvDir2;
+	  newx = tempB.x;
+	  newy = tempB.y;
+	  newz = tempB.z;
+	  
+	  cryph::AffPoint tempT = tempB + coneHeight*buildingUpVector;
+	  newxt = tempT.x;
+	  newyt = tempT.y;
+	  newzt = tempT.z;
+	 //Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, float tradius_, float color_[6], bool capped_){
+	  cryph::AffPoint bottomP = (*(new cryph::AffPoint(newx,newy,newz)));
+	  cryph::AffPoint topP = (*(new cryph::AffPoint(newxt,newyt,newzt)));
+	  std::cout << "feifjeifjeifj: " << bottomP.x << ", " << bottomP.y << ", " << bottomP.z << "\n";
+	   Column* column = (new Column( bottomP, newbottomRadius, topP, newtopRadius, gold, true));
+//  	 Column column = *(new Column( *(new cryph::AffPoint(newx,newy,newz)), bottomRadius, *(new cryph::AffPoint(newxt,newyt,newzt)), topRadius, gold, true));
+	 c.addModel(column);
+	  
+	  
+	}
+	
+	//make a firepit
+	cryph::AffPoint stairsCenter = (stairs.frontRightBottomCorner-stairs.frontLeftBottomCorner)/2;
+	//move foward some
+	cryph::AffPoint firePitCenter = stairsCenter - mainBuilding.getTowardsBackUnitVec()*buildingLength*2;
+	float firePitWidth = buildingLength;//LOL
+	
+	cryph::AffPoint firePitLeft = firePitCenter + v*(firePitWidth/2);
+	cryph::AffPoint firePitRight = firePitCenter - v*(firePitWidth/2);
+	//float height_, float width_, cryph::AffPoint bottomLeft_,cryph::AffVector upVector_, cryph::AffVector toRightFrontVector_,float color_[3], int numFancies_){
+	FirePit firepit(buildingHeight*1.2, firePitWidth, firePitLeft, buildingUpVector, firePitRight-firePitLeft, burlywood, 12);
+	  
+	
+	
+	//other firepit
+	cryph::AffPoint otherFireLeftPoint = firePitRight + v*(buildingWidth);
+	cryph::AffPoint otherFireRightPoint = otherFireLeftPoint + (-v)*firePitWidth;
+	FirePit firepit2(buildingHeight*1.2, firePitWidth, otherFireLeftPoint, buildingUpVector, firePitRight-firePitLeft, burlywood, 12);
+	  
+	
 	double xyz[6];
 	c.getOverallMCBoundingBox(xyz);
 	std::cout << "TOTAL  bounds: " << xyz[0] << ", " << xyz[1] <<", " <<  xyz[2] << ", " << xyz[3] <<", " <<   xyz[4] << ", " << xyz[5] << "\n\ndone!";
 	set3DViewingInformation(xyz);
 
+	
+	
+	
 	c.run();
 
 	return 0;

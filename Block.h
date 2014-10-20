@@ -10,6 +10,7 @@ class Block : public ModelViewWithLighting
 public:
 	typedef float vec3[3];
 	Block();
+	Block(float height_, float width_, float length_, cryph::AffVector normal_,cryph::AffPoint frontLeftBottomCorner_,cryph::AffVector toRightCorner_, vec3 color_); //smarter constructor.
 	Block(float height_, float width_, float length_, cryph::AffVector normal_,cryph::AffPoint frontLeftBottomCorner_,cryph::AffPoint frontRightBottomCorner_, vec3 color_);
 	virtual ~Block();
 
@@ -26,6 +27,14 @@ public:
 	// xyzLimits: {mcXmin, mcXmax, mcYmin, mcYmax, mcZmin, mcZmax}
 	void getMCBoundingBox(double* xyzLimitsF) const;
 	void render();
+	
+	
+	
+	
+	float getWidth();
+	float getHeight();
+ 
+	cryph::AffVector getTowardsBackUnitVec();
 private:
   
   

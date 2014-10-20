@@ -22,7 +22,7 @@ Column::Column()
 
 }
 
-Column::Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, float tradius_, float color_[6], bool capped_){
+Column::Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, float tradius_, float color_[3], bool capped_){
   Column::instances++;
   
   Ihandle = (Column::instances ==1)? true : false; //take care of the handling.

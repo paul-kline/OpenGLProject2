@@ -6,7 +6,7 @@ LINK = g++ -fPIC -g
 LOCAL_UTIL_LIBRARIES = -L../lib -lcryph -lfont -lglsl -lmvc
 OGL_LIBRARIES = -lglfw -lGLU -lGL
 
-OBJS = project2.o Simpleshape.o getMatrices.o Cylinder.o Column.o Block.o Stairs.o HalfColumn.o FancyColumn.o SuperFancyColumn.o
+OBJS = project2.o Simpleshape.o getMatrices.o Cylinder.o Column.o Block.o Stairs.o HalfColumn.o FancyColumn.o SuperFancyColumn.o FirePit.o
 all:
 	$(MAKE) -C ../mvcutil
 	$(MAKE) project2
@@ -46,6 +46,8 @@ Cylinder.o: Cylinder.h Cylinder.c++
 	$(CPP) $(C_FLAGS) Cylinder.c++
 SuperFancyColumn.o: SuperFancyColumn.h SuperFancyColumn.c++
 	$(CPP) $(C_FLAGS) SuperFancyColumn.c++	
+FirePit.o: FirePit.h FirePit.c++
+	$(CPP) $(C_FLAGS) FirePit.c++	
 	
 clean:
 	rm -f ../mvcutil/ModelView.o ../mvcutil/ModelViewWithLighting.o ./*.o

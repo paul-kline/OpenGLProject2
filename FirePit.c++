@@ -1,6 +1,6 @@
-// SuperFancyColumn.c++
+// FirePit.c++
 
-#include "SuperFancyColumn.h"
+#include "FirePit.h"
 #include "ShaderIF.h"
 #include <cmath>
 #include "GLFWController.h"
@@ -13,7 +13,7 @@
 
 
 
-SuperFancyColumn::SuperFancyColumn(float height_, float width_, cryph::AffPoint bottomLeft_,cryph::AffVector upVector_, cryph::AffVector toRightFrontVector_,float color_[3], int numFancies_){
+FirePit::FirePit(float height_, float width_, cryph::AffPoint bottomLeft_,cryph::AffVector upVector_, cryph::AffVector toRightFrontVector_,float color_[3], int numFancies_){
 
   height = height_;
   width = width_;
@@ -28,7 +28,7 @@ SuperFancyColumn::SuperFancyColumn(float height_, float width_, cryph::AffPoint 
  color[1] = color_[1];
  color[2] = color_[2];
  
- defineSuperFancyColumn();
+ defineFirePit();
 
   black[0] =0.0; black[1] =0.0; black[2]=0.0;
  //for moving the eye.
@@ -37,19 +37,20 @@ SuperFancyColumn::SuperFancyColumn(float height_, float width_, cryph::AffPoint 
   
 };
 
-SuperFancyColumn::~SuperFancyColumn()
+FirePit::~FirePit()
 {
   
 }
 
 
 
-void SuperFancyColumn::defineSuperFancyColumn()
+void FirePit::defineFirePit()
 {
   
-  float blockHeightPercentage = 0.05;
-  float leadingColumnHeightPercentage = 0.05;
-  float fancyColumnHeightPercentage = 1 - (2*blockHeightPercentage + 2*leadingColumnHeightPercentage); // he gets the rest
+  float blockHeightPercentage = 0.20;
+  float leadingColumnHeightPercentage = 0.08;
+  float bowlHeightPercentage = 0.30;
+  float fancyColumnHeightPercentage = 1 - (blockHeightPercentage + leadingColumnHeightPercentage + bowlHeightPercentage); // he gets the rest
   float radiusPercentOfWidth = 0.90;
   
   float blockHeight = blockHeightPercentage * height;
@@ -59,10 +60,10 @@ void SuperFancyColumn::defineSuperFancyColumn()
   //Block(float height_, float width_, float length_, cryph::AffVector normal_,cryph::AffPoint frontLeftBottomCorner_,cryph::AffPoint frontRightBottomCorner_, vec3 color_)
   baseBlock = *(new Block(blockHeight, blockWidth,blockWidth, upVector, bottomLeft, bottomLeft + (blockWidth*toRightFrontVector),color));
   
-  cryph::AffPoint secondBottomLeft = (bottomLeft + (upVector* (height - blockHeight)));
-  cryph::AffPoint secondBottomRight = secondBottomLeft + (blockWidth*toRightFrontVector);
-  topBlock = *(new Block(blockHeight,blockWidth,blockWidth, upVector, secondBottomLeft,secondBottomRight,color));
-  
+//   cryph::AffPoint secondBottomLeft = (bottomLeft + (upVector* (height - blockHeight)));
+//   cryph::AffPoint secondBottomRight = secondBottomLeft + (blockWidth*toRightFrontVector);
+//   topBlock = *(new Block(blockHeight,blockWidth,blockWidth, upVector, secondBottomLeft,secondBottomRight,color));
+//   
   //now the leader columns
   //Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, float tradius_, float color_[6], bool capped_)
   cryph::AffVector towardsBack = upVector.cross(toRightFrontVector);
@@ -75,20 +76,27 @@ void SuperFancyColumn::defineSuperFancyColumn()
     
   lowerColumn= *(new Column(lowercolumnbottom, leadingcolRadius, (lowercolumnbottom + (leadingcolHeight*upVector)), smallerRadius, color, true));
   
+  
+  float bigRadius = blockWidth;
+  float bowlHeight = bowlHeightPercentage*height;
   cryph::AffPoint topColumnBottom = lowercolumnbottom + (leadingcolHeight * upVector) + fancyColumnHeightPercentage*height*upVector ;
-  topColumn = *(new Column(topColumnBottom + (leadingcolHeight*upVector) ,leadingcolRadius , topColumnBottom ,smallerRadius  ,color,true));
+  
+  //so it can hold something
+  Column* bufferColumn = (new Column(topColumnBottom ,leadingcolRadius , topColumnBottom+ (0.05*upVector) ,leadingcolRadius  ,color,true));
+  
+  topColumn = *(new Column(topColumnBottom ,leadingcolRadius , topColumnBottom+ (bowlHeight*upVector) ,bigRadius  ,color,false));
   
   
   //FancyColumn(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, float tradius_, float color_[3], bool capped_, int numCircs_){
-  fancyColumn = *(new FancyColumn( (lowercolumnbottom + leadingcolHeight*upVector) , smallerRadius, topColumnBottom, smallerRadius, color,false,numFancies));
+  fancyColumn = *(new FancyColumn( (lowercolumnbottom + leadingcolHeight*upVector) , smallerRadius, topColumnBottom, smallerRadius, color,true,numFancies));
   
   
   Controller* c = GLFWController::getCurrentController();
-  
+  c->addModel(&fancyColumn);
   c->addModel(&baseBlock);
-  c->addModel(&topBlock);
   c->addModel(&lowerColumn);
   c->addModel(&topColumn);
+  c->addModel(bufferColumn);
   
   
   

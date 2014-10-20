@@ -43,6 +43,36 @@ frontLeftBottomCorner=cryph::AffPoint( 1,0,0);
 // setBounds();
 
 }
+Block::Block(float height_, float width_, float length_, cryph::AffVector normal_,cryph::AffPoint frontLeftBottomCorner_,cryph::AffVector toRightCorner_, vec3 color_){
+
+ height=height_;
+ width=width_;
+ length=length_;
+ 
+ mainNormal=normal_;
+ mainNormal.normalize(); //just in case someone hadn't..
+ 
+ frontLeftBottomCorner=frontLeftBottomCorner_;
+ cryph::AffVector toRight;
+ toRightCorner_.normalizeToCopy(toRight);
+ 
+ frontRightBottomCorner=frontLeftBottomCorner + width*toRight;
+
+ color[0] = color_[0];
+ color[1] = color_[1];
+ color[2] = color_[2];
+ 
+ widthVector= frontRightBottomCorner - frontLeftBottomCorner;
+ widthVector.normalize();
+ 
+ lengthVector = mainNormal.cross(widthVector);
+ lengthVector.normalize();
+ 
+ 
+ defineBlock(); 
+ setBounds();
+  
+};
 
 Block::Block(float height_, float width_, float length_, cryph::AffVector normal_,cryph::AffPoint frontLeftBottomCorner_,cryph::AffPoint frontRightBottomCorner_, vec3 color_){
 
@@ -102,6 +132,7 @@ void Block::defineBlock()
 			
 	glVertexAttribPointer(pvaLoc_mcPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(pvaLoc_mcPosition);
+	glDisableVertexAttribArray(pvaLoc_mcNormal);
   
 }
 
@@ -212,11 +243,11 @@ void Block::renderBlock(vec3 color){
 	glBindVertexArray(vao[0]);
 	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*(NUM_AROUND_CIRCLE+1)); 
   
-	 glDisableVertexAttribArray(pvaLoc_mcNormal);
+// 	 glDisableVertexAttribArray(pvaLoc_mcNormal);
 	 cryph::AffVector tempV = -lengthVector;
 	 glVertexAttrib3f(pvaLoc_mcNormal, tempV.dx,tempV.dy,tempV.dz);
 	 glDrawArrays(GL_TRIANGLE_FAN, 0, 4); 
-	 
+	// glEnableVertexAttribArray(pvaLoc_mcNormal);
 	 tempV = widthVector;
 	 glVertexAttrib3f(pvaLoc_mcNormal, tempV.dx,tempV.dy,tempV.dz);
 	 glDrawArrays(GL_TRIANGLE_FAN, 2, 4); 
@@ -290,5 +321,19 @@ void Block::render()
 
 	glUseProgram(pgm);
 }
+
+float Block::getWidth(){
+  return width;
+}
+float Block::getHeight(){
+  return height;
+}
+cryph::AffVector Block::getTowardsBackUnitVec(){
+  cryph::AffVector t = up.cross(frontRightBottomCorner-frontLeftBottomCorner);
+  t.normalize();
+  return (*(new cryph::AffVector(t.dx, t.dy,t.dz)));
+  
+}
+
 
 
