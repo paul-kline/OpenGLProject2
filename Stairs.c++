@@ -84,7 +84,10 @@ Stairs::Stairs(float height_, float width_, float length_, cryph::AffVector norm
 
 Stairs::~Stairs()
 {
-  delete [] blocks;
+  for(int i=0; i< numStairs; i++){
+   blocks[i].~Block(); 
+    
+  }
 }
 
 // xyzLimits: {mcXmin, mcXmax, mcYmin, mcYmax, mcZmin, mcZmax}

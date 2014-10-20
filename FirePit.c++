@@ -39,6 +39,11 @@ FirePit::FirePit(float height_, float width_, cryph::AffPoint bottomLeft_,cryph:
 
 FirePit::~FirePit()
 {
+  baseBlock.~Block();
+  bufferColumn->~Column();// bufferColumn->render();
+  lowerColumn.~Column();// lowerColumn.render();
+  topColumn.~Column();// topColumn.render();
+  fancyColumn.~FancyColumn();// fancyColumn.render();
   
 }
 

@@ -49,7 +49,10 @@ FancyColumn::~FancyColumn()
 {
   delete topCap;
   delete bottomCap;
-  delete halfColumns;
+  for(int i =0; i< numCircs; i++){
+   halfColumns[i].~HalfColumn(); 
+  }
+  //delete halfColumns;
 }
 
 // xyzLimits: {mcXmin, mcXmax, mcYmin, mcYmax, mcZmin, mcZmax}
