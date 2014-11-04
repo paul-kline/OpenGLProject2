@@ -4,7 +4,6 @@
 #include "Simpleshape.h"
 #include "Column.h"
 #include "Block.h"
-#include "Cylinder.h"
 #include "Stairs.h"
 #include "HalfColumn.h"
 #include "FancyColumn.h"
@@ -339,7 +338,7 @@ int main(int argc, char* argv[])
 	}	
 	//now do along front
 	
-	float spaceToFill = buildingWidth - 2*spacing;
+	float spaceToFill = buildingWidth - 3*spacing; //changed from 2*spacing. 2 from moving one cone over from each side, then half over from each side so the spacing is right
 	int newNumToFit = round(numAlongTopLength*spaceToFill/roofLength);
 // 	//how many spaces do I have?
 // 	float spaces = spaceToFill/spacing;
@@ -352,7 +351,7 @@ int main(int argc, char* argv[])
 	//reset the direction
 	mvDir2 = v;
 	//move the starting point.
-	firstConeCenter+= mvDir2*(spacing/2) + mvDir2*newSpacing/2;
+	firstConeCenter+= mvDir2*(spacing) + mvDir2*newSpacing/2;
 	for(int i=0; i<newNumToFit; i++){
 	  float newx;
 	  float newy;

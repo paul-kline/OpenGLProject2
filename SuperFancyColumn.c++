@@ -40,11 +40,11 @@ SuperFancyColumn::SuperFancyColumn(float height_, float width_, cryph::AffPoint 
 
 SuperFancyColumn::~SuperFancyColumn()
 {
-  baseBlock.~Block();
-  topBlock.~Block();// bufferColumn->render();
-  lowerColumn.~Column();// lowerColumn.render();
-  topColumn.~Column();// topColumn.render();
-  fancyColumn.~FancyColumn();
+  delete &baseBlock;
+  delete &topBlock;// bufferColumn->render();
+  delete &lowerColumn;// lowerColumn.render();
+  delete &topColumn;// topColumn.render();
+  delete &fancyColumn;
   
 }
 

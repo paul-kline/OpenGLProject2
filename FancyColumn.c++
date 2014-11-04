@@ -47,10 +47,9 @@ FancyColumn::FancyColumn(cryph::AffPoint bottom_, float bradius_, cryph::AffPoin
 
 FancyColumn::~FancyColumn()
 {
-  delete topCap;
-  delete bottomCap;
+
   for(int i =0; i< numCircs; i++){
-   halfColumns[i].~HalfColumn(); 
+   delete &halfColumns[i]; 
   }
   //delete halfColumns;
 }

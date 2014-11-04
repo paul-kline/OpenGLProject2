@@ -85,7 +85,7 @@ Stairs::Stairs(float height_, float width_, float length_, cryph::AffVector norm
 Stairs::~Stairs()
 {
   for(int i=0; i< numStairs; i++){
-   blocks[i].~Block(); 
+    delete &blocks[i];  
     
   }
 }

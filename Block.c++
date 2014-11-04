@@ -243,7 +243,7 @@ void Block::renderBlock(vec3 color){
 	glBindVertexArray(vao[0]);
 	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*(NUM_AROUND_CIRCLE+1)); 
   
-// 	 glDisableVertexAttribArray(pvaLoc_mcNormal);
+ 	 glDisableVertexAttribArray(pvaLoc_mcNormal);
 	 cryph::AffVector tempV = -lengthVector;
 	 glVertexAttrib3f(pvaLoc_mcNormal, tempV.dx,tempV.dy,tempV.dz);
 	 glDrawArrays(GL_TRIANGLE_FAN, 0, 4); 
@@ -288,7 +288,7 @@ void Block::renderBlock(vec3 color){
 	 glVertexAttrib3f(pvaLoc_mcNormal, direction.dx,direction.dy,direction.dz);
 	 glDrawElements(GL_TRIANGLE_FAN,(NUM_AROUND_CIRCLE+1),GL_UNSIGNED_INT,  topCap);
 	 glE*/
-	 //enableVertexAttribArray(pvaLoc_mcNormal);
+	 glEnableVertexAttribArray(pvaLoc_mcNormal); //be nice and turn it back on if someone else forgets.
 }
 
 

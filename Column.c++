@@ -49,8 +49,7 @@ Column::Column(cryph::AffPoint bottom_, float bradius_, cryph::AffPoint top_, fl
 
 Column::~Column()
 {
-  delete [] topCap;
-  delete [] bottomCap;
+
 }
 
 // xyzLimits: {mcXmin, mcXmax, mcYmin, mcYmax, mcZmin, mcZmax}
