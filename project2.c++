@@ -34,8 +34,21 @@ void set3DViewingInformation(double xyz[6])
 	if (delta > maxDelta){
 	  maxDelta = delta;
 	}
-	double distEyeCenter = 2.0 * maxDelta;
-	cryph::AffPoint eye(xmid-maxDelta/2, ymid+maxDelta/2, zmid + distEyeCenter);
+	float width = xyz[1] -xyz[0];
+	float height = xyz[3] - xyz[2];
+	float depth = xyz[5] - xyz[4];
+	
+	float plaindiagonal = sqrt(height*height + width*width);
+	float diagonal = sqrt(plaindiagonal*plaindiagonal + depth*depth);
+	
+	//Its radius will be half the diagonal length of the MC region of interest. Set ecXmin = ecYmin = -radius; 
+	//ecXmax = ecYmax = radius, and make sure ecZmin and ecZmax are set so as to avoid unwanted depth clipping. The value for zpp can usually remain as suggested in 2.B.i.
+	float viewingRadius = diagonal/2;
+	
+	double distEyeCenter = 2.0 * diagonal;
+	cryph::AffPoint eye(xmid, ymid, zmid + distEyeCenter);
+	
+	
 
 	cryph::AffVector up = cryph::AffVector::yu;
 	
@@ -52,13 +65,17 @@ void set3DViewingInformation(double xyz[6])
 
 	// Set values for zpp, zmin, zmax that make sense in the context of
 	// the EC system established above, then:
-
-	zpp = -(distEyeCenter - 0.5*maxDelta);
-	zmin = zpp - 2*maxDelta;
-	zmax = zpp + maxDelta; //changed from half maxDelta
+	zmin = -(distEyeCenter + viewingRadius);
+//  	zpp = -(distEyeCenter - 0.5*maxDelta);
+//	zmin =zpp;//zmin = zpp - 2*maxDelta;
+	zmax = zmin + diagonal;
+	zpp = zmax;
+	//zmax = zmin + diagonal; //zpp + maxDelta; //changed from half maxDelta
+//	zpp = zmin;
 	ModelView::setProjection(PERSPECTIVE);
 	ModelView::setProjectionPlaneZ(zpp);
 	ModelView::setECZminZmax(zmin, zmax);
+
 }
 
 int main(int argc, char* argv[])

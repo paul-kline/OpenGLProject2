@@ -6,7 +6,7 @@ LINK = g++ -fPIC -g
 LOCAL_UTIL_LIBRARIES = -L../lib -lcryph -lfont -lglsl -lmvc
 OGL_LIBRARIES = -lglfw -lGLU -lGL
 
-OBJS = project2.o Simpleshape.o getMatrices.o Column.o Block.o Stairs.o HalfColumn.o FancyColumn.o SuperFancyColumn.o FirePit.o
+OBJS = project2.o Simpleshape.o getMatrices.o ModelViewWithLighting.o Column.o Block.o Stairs.o HalfColumn.o FancyColumn.o SuperFancyColumn.o FirePit.o
 all:
 	$(MAKE) -C ../mvcutil
 	$(MAKE) project2
@@ -30,6 +30,8 @@ project2.o: project2.c++
 	$(CPP) $(C_FLAGS) project2.c++
 getMatrices.o: getMatrices.c++
 	$(CPP) $(C_FLAGS) getMatrices.c++
+ModelViewWithLighting.o: ModelViewWithLighting.h ModelViewWithLighting.c++
+	$(CPP) $(C_FLAGS) ModelViewWithLighting.c++
 Column.o: Column.h Column.c++
 	$(CPP) $(C_FLAGS) Column.c++
 HalfColumn.o: HalfColumn.h HalfColumn.c++
